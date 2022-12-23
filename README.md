@@ -93,6 +93,24 @@ Contributions are what make the open source community such an amazing place to b
 
 
 
+<!-- Main Features -->
+## ChatGPT Prompts
+Large Language Models
+<br /> 1. Please create a knowledge graph about large language models, written in HTML, Javascript, and D3.js
+<br /> 2. This is great!  Please add more nodes and relationships to this knowledge graph
+<br /> 3. This is great!  Please update the style of this page to be more modern and cutting edge
+<br /> 4. This is very difficult to see.  Please make the background black and update the text, nodes, and links to be easy to see on the black background.  All elements should have a high tech, cutting-edge color and style
+<br /> 5. Excellent, thanks!  Can you please separate the code into separate files for html, css, and javascript?
+<br /> 6. Excellent!  The text labels are difficult to read as it blends in with the node circle outline.  Please update the css to make the text labels more readable
+<br /> 7. This is less readable as the label text is difficult to read against the black background.  Please update the CSS to make the label text more readable.  White text may be easier to read, and perhaps making a black stroke around the nodes will help
+<br /> 8. Excellent, this looks great!  Please update the HTML and Javascript to create a sidebar that allows the user to find and select which knowledge graph they want to see.  The initial knowledge graphs will be for Large Language Models, Financial Markets, and Medical Knowledge.  Note that clicking on Financial Markets and Medical Knowledge will display placeholders for now as we haven't created the knowledge graphs yet, but clicking on the Large Language Models should display the Large Language Model knowledge graph we have already created.
+<br /> 9. Great! Now please provide the updated CSS
+<br /> 10. Thanks, this looks great!  Please update this so that the title of the specific selected knowledge graph is displayed centered across the entire page
+
+<br /> NOTE: use `Continue code` or `Continue` if responses from ChatGPT are not complete.
+
+
+
 <!-- LICENSE -->
 ## License
 

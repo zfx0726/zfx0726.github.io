@@ -22,6 +22,7 @@ body {
   margin: 20px 0;
   text-transform: uppercase;
   letter-spacing: 2px;
+  font-size: 14px;
 }
 
 #sidebar ul {
@@ -41,6 +42,10 @@ body {
   background: #444;
 }
 
+#sidebar li.selected {
+  color: #fff;
+}
+
 /* Style the main content area */
 #main {
   margin-left: 200px;
@@ -52,6 +57,19 @@ body {
 
 .graph.selected {
   display: block;
+  text-align: center;
+  font-size: 24px;
+  color: #fff;
+  margin-top: 20px;
+}
+
+#title {
+  text-align: center;
+  font-size: 48px;
+  margin: 20px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #fff;
 }
 
 /* Style the chart */
