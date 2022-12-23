@@ -1,13 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Large Language Models Knowledge Graph</title>
+    <title>Knowledge Graphs</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v5.min.js"></script>
   </head>
   <body>
-    <h1>Large Language Models Knowledge Graph</h1>
-    <div id="chart"></div>
+    <div id="sidebar">
+      <h1>Knowledge Graphs</h1>
+      <ul>
+        <li class="selected" data-graph="large-language-models">Large Language Models</li>
+        <li data-graph="financial-markets">Financial Markets</li>
+        <li data-graph="medical-knowledge">Medical Knowledge</li>
+      </ul>
+    </div>
+    <div id="main">
+      <div id="large-language-models" class="graph selected">
+        <h2>Large Language Models</h2>
+        <div id="chart"></div>
+      </div>
+      <div id="financial-markets" class="graph">
+        <h2>Financial Markets</h2>
+        <p>This knowledge graph is not yet available. Please check back later.</p>
+      </div>
+      <div id="medical-knowledge" class="graph">
+        <h2>Medical Knowledge</h2>
+        <p>This knowledge graph is not yet available. Please check back later.</p>
+      </div>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>

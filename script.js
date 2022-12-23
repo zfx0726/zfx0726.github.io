@@ -1,7 +1,7 @@
 // Set up the chart
 const width = 800;
 const height = 600;
-const svg = d3.select("#chart")
+const svg = d3.select("#large-language-models #chart")
   .append("svg")
   .attr("width", width)
   .attr("height", height);
@@ -112,3 +112,19 @@ simulation.on("tick", () => {
         d.fx = null;
         d.fy = null;
       }
+
+      // Set up the sidebar
+      const sidebar = d3.select("#sidebar");
+      sidebar.on("click", function() {
+        const li = d3.event.target;
+        if (li.tagName === "LI") {
+          const graphId = li.getAttribute("data-graph");
+          const graph = d3.select(`#${graphId}`);
+          if (graph.classed("selected")) return;
+
+          sidebar.selectAll("li").classed("selected", false);
+          d3.select(li).classed("selected", true);
+          d3.selectAll(".graph").classed("selected", false);
+          graph.classed("selected", true);
+        }
+      });
