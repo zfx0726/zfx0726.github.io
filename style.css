@@ -73,27 +73,27 @@ body {
 }
 
 /* Style the chart */
-#chart {
+#chart, #financial-markets-chart {
   width: 100%;
   height: 100%;
 }
 
 /* Style the links */
-.links line {
+.links line, .financial-links line {
   stroke: #00b8d4;
   stroke-opacity: 1;
   stroke-width: 3px;
 }
 
 /* Style the nodes */
-.nodes circle {
+.nodes circle, .financial-nodes circle {
   fill: #00b8d4;
   stroke: #000;
   stroke-width: 2px;
 }
 
 /* Style the labels */
-.labels text {
+.labels text, .financial-labels text {
   font-size: 12px;
   font-family: sans-serif;
   fill: #fff;
