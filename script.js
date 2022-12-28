@@ -22,7 +22,6 @@ const financialSvg = d3.select('#financial-markets-chart')
 // Data
 
 // Data for the Large Language Models graph
-// Data for the Large Language Models graph
 const nodes = [
   { id: "GPT-3", organization: "OpenAI" },
   { id: "BERT", organization: "Google Research" },
@@ -123,7 +122,6 @@ const links = [
   { source: "GPT-2-xl", target: "GPT-2" }
 ];
 
-
 // Data for the Financial Markets graph
 const financialNodes = [
   {id: 'Stock Market'},
@@ -194,18 +192,6 @@ const financialLink = financialSvg.append('g')
   .enter().append('line');
 
 
-// Add a label to each link showing its type
-const linkLabel = svg.append('g')
-  .attr('class', 'link-labels')
-  .selectAll('text')
-  .data(links)
-  .enter().append('text')
-  .style("font-size", "7px")
-  .style("fill", "white")
-  .text(function(d) { return d.type; })
-  .attr("text-anchor", "middle")
-  .attr("dy", "0");
-
 
 // Node elements
 
@@ -238,21 +224,14 @@ const financialNode = financialSvg.append('g')
 
 // Labels
 
-// Create the labels for the nodes and links
+// Create the labels for the Large Language Models graph
 const label = svg.append('g')
   .attr('class', 'labels')
   .selectAll('text')
-  .data(nodes.concat(links))
+  .data(nodes)
   .enter().append('text')
-  .text(function(d) {
-    if (d.id) {
-      return d.id;
-    } else {
-      return d.type;
-    }
-  })
+  .text(d => d.id)
   .attr('dy', '0.35em');
-
   
 const financialLabel = financialSvg.append('g')
   .attr('class', 'financial-labels')
@@ -281,21 +260,6 @@ function ticked() {
   label
     .attr('x', d => d.x)
     .attr('y', d => d.y);
-    
-// Position the link labels halfway between the source and target nodes
-  linkLabel
-    .attr('x', d => (d.source.x + d.target.x) / 2)
-    .attr('y', d => (d.source.y + d.target.y) / 2);
-    
-// Rotate the link labels to follow the links
-  linkLabel.attr('transform', d => {
-    const x = (d.source.x + d.target.x) / 2;
-    const y = (d.source.y + d.target.y) / 2;
-    const dx = d.target.x - d.source.x;
-    const dy = d.target.y - d.source.y;
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-    return `rotate(${angle}, ${x}, ${y}) translate(${d3.event.transform.x},${d3.event.transform.y}) scale(${d3.event.transform.k})`;
-  });
 }
   
 
@@ -352,7 +316,6 @@ function zoomed() {
   // Update the transform attribute of the nodes and labels group
   node.attr('transform', d3.event.transform);
   label.attr('transform', d3.event.transform);
-  linkLabel.attr('transform', d3.event.transform);
 
   // Update the transform attribute of the links group
   link.attr('transform', d3.event.transform);
