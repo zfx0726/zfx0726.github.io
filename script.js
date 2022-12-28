@@ -146,7 +146,7 @@ const financialLinks = [
 // Set up the force-directed layout for the Large Language Models graph
 const simulation = d3.forceSimulation()
   .force('link', d3.forceLink().id(d => d.id))
-  .force('charge', d3.forceManyBody().strength(-500))
+  .force('charge', d3.forceManyBody().strength(-500).distanceMax(100))
   .force('center', d3.forceCenter(width / 2, height / 2));
   
 // Set up the force-directed layout for Financial Markets
@@ -298,6 +298,28 @@ financialSimulation
 
 financialSimulation.force('link')
   .links(financialLinks);
+
+
+// Set up the zoom behavior
+const zoom = d3.zoom()
+  .scaleExtent([-1, 100])
+  .on('zoom', zoomed);
+
+// Add the zoom behavior to the SVG element
+// Set the initial zoom level
+zoom.transform(svg, d3.zoomIdentity.scale(.7));
+
+svg.call(zoom);
+
+// Set up the zoom function
+function zoomed() {
+  // Update the transform attribute of the nodes and labels group
+  node.attr('transform', d3.event.transform);
+  label.attr('transform', d3.event.transform);
+
+  // Update the transform attribute of the links group
+  link.attr('transform', d3.event.transform);
+}
 
 // Set up the sidebar
 const sidebar = d3.select('#sidebar');
