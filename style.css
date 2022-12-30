@@ -82,7 +82,7 @@ body {
 .links line, .financial-links line {
   stroke: #00b8d4;
   stroke-opacity: 1;
-  stroke-width: 3px;
+  stroke-width: 1px;
 }
 
 /* Style the nodes */
@@ -94,7 +94,19 @@ body {
 
 /* Style the labels */
 .labels text, .financial-labels text {
-  font-size: 12px;
+  font-size: 10px;
   font-family: sans-serif;
   fill: #fff;
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+
+}
+
+
+/* Style the labels */
+.link-labels text, .financial-link-labels text {
+  font-size: 5px;
+  font-family: sans-serif;
+  fill: white;
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+
 }
