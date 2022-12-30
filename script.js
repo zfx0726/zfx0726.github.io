@@ -22,121 +22,110 @@ const financialSvg = d3.select('#financial-markets-chart')
 // Data
 
 // Data for the Large Language Models graph
-const nodes = [
-  { id: "GPT-3", organization: "OpenAI" },
-  { id: "BERT", organization: "Google Research" },
-  { id: "RoBERTa", organization: "Facebook AI Research" },
-  { id: "ALBERT", organization: "Google Research" },
-  { id: "ELECTRA", organization: "Google Research" },
-  { id: "XLNet", organization: "Google Research" },
-  { id: "Davinci", organization: "OpenAI" },
-  { id: "T5", organization: "Google Research" },
-  { id: "Megatron", organization: "OpenAI" },
-  { id: "Reformer", organization: "Google Research" },
-  { id: "LAMB", organization: "Google Research" },
-  { id: "ADAM", organization: "Google Research" },
-  { id: "MT-DNN", organization: "Microsoft Research Asia" },
-  { id: "XLM", organization: "Facebook AI Research" },
-  { id: "MASS", organization: "Google Research" },
-  { id: "BART", organization: "Facebook AI Research" },
-  { id: "GPT-2", organization: "OpenAI" },
-  { id: "XLM-RoBERTa", organization: "Facebook AI Research" },
-  { id: "NEZHA", organization: "Baidu Research" },
-  { id: "ERNIE", organization: "Baidu Research" },
-  { id: "ERNIE 2.0", organization: "Baidu Research" },
-  { id: "Transformer-XL", organization: "Google Research" },
-  { id: "CTRL", organization: "OpenAI" },
-  { id: "PEGASUS", organization: "Google Research" },
-  { id: "LXMERT", organization: "Baidu Research" },
-  { id: "SpanBERT", organization: "Google Research" },
-  { id: "Longformer", organization: "Facebook AI Research" },
-  { id: "XLM-ProphetNet", organization: "Facebook AI Research" },
-  { id: "DeBERTa", organization: "Baidu Research" },
-  { id: "TextGPT", organization: "Microsoft Research Asia" },
-  { id: "BaiduNet", organization: "Baidu Research" },
-  { id: "ERNIE-Vi", organization: "Baidu Research" },
-  { id: "DistilBERT", organization: "Hugging Face" },
-  { id: "XLNet-base", organization: "Google Research" },
-  { id: "OmegleBERT", organization: "Omegle" },
-  { id: "OpenAI GPT", organization: "OpenAI" },
-  { id: "BaiduBERT", organization: "Baidu Research" },
-  { id: "GPT", organization: "OpenAI" },
-  { id: "xlnet-base-cased", organization: "Google Research" },
-  { id: "GPT-1", organization: "OpenAI" },
-  { id: "Transformer-XL-wt103", organization: "Google Research"},
-  { id: "Transformer-XL-wt103", organization: "Google Research" },
-  { id: "Bert-base", organization: "Google Research" },
-  { id: "DistilGPT2", organization: "Hugging Face" },
-  { id: "GPT-2-117M", organization: "OpenAI" },
-  { id: "RoBERTa-base", organization: "Facebook AI Research" },
-  { id: "Roberta-base", organization: "Facebook AI Research" },
-  { id: "GPT-2-small", organization: "OpenAI" },
-  { id: "GPT-2-medium", organization: "OpenAI" },
-  { id: "GPT-2-large", organization: "OpenAI" },
-  { id: "GPT-2-xl", organization: "OpenAI" }
+var nodes = [  { id: "BERT", type: "language model", domain: "NLP", applications: ["text classification", "question answering"] },
+  { id: "GPT", type: "language model", domain: "NLP", applications: ["language generation"] },
+  { id: "Transformer", type: "language model", domain: "NLP", applications: ["machine translation"] },
+  { id: "BioBERT", type: "language model", domain: "biomedical text mining", applications: ["text classification"] },
+  { id: "GPT-3", type: "language model", domain: "NLP", applications: ["language generation", "question answering"] },
+  { id: "NLP", type: "domain" },
+  { id: "text classification", type: "application" },
+  { id: "question answering", type: "application" },
+  { id: "language generation", type: "application" },
+  { id: "machine translation", type: "application" },
+  { id: "biomedical text mining", type: "domain" },
+  { id: "MIT", type: "research group", researchers: ["Ian Goodfellow", "Yoshua Bengio"] },
+  { id: "OpenAI", type: "research group", researchers: ["Dario Amodei", "Ian Goodfellow"] },
+  { id: "Ian Goodfellow", type: "researcher", research_groups: ["MIT", "OpenAI"] },
+  { id: "Yoshua Bengio", type: "researcher", research_groups: ["MIT"] },
+  { id: "Dario Amodei", type: "researcher", research_groups: ["OpenAI"] },
+  { id: "MNIST", type: "dataset", language_models: ["BERT", "GPT"] },
+  { id: "BioMedical Corpus", type: "dataset", language_models: ["BioBERT"] },
+  { id: "WebText", type: "dataset", language_models: ["GPT-3"] }
 ];
 
-const links = [
-  { source: "GPT-3", target: "GPT-2" },
-  { source: "GPT-2", target: "GPT-1" },
-  { source: "GPT-1", target: "GPT" },
-  { source: "GPT", target: "OpenAI GPT" },
-  { source: "RoBERTa", target: "BERT" },
-  { source: "ALBERT", target: "BERT" },
-  { source: "ELECTRA", target: "BERT" },
-  { source: "XLNet", target: "Transformer-XL" },
-  { source: "T5", target: "Transformer-XL" },
-  { source: "Megatron", target: "GPT-2" },
-  { source: "Reformer", target: "Transformer-XL" },
-  { source: "LAMB", target: "BERT" },
-  { source: "ADAM", target: "BERT" },
-  { source: "MT-DNN", target: "BERT" },
-  { source: "XLM", target: "BERT" },
-  { source: "MASS", target: "BERT" },
-  { source: "BART", target: "BERT" },
-  { source: "XLM-RoBERTa", target: "RoBERTa" },
-  { source: "ERNIE", target: "BERT" },
-  { source: "ERNIE 2.0", target: "ERNIE" },
-  { source: "PEGASUS", target: "Transformer-XL" },
-  { source: "LXMERT", target: "BERT" },
-  { source: "SpanBERT", target: "BERT" },
-  { source: "Longformer", target: "Transformer-XL" },
-  { source: "XLM-ProphetNet", target: "XLM" },
-  { source: "DeBERTa", target: "BERT" },
-  { source: "TextGPT", target: "GPT-2" },
-  { source: "BaiduNet", target: "BERT" },
-  { source: "ERNIE-Vi", target: "ERNIE" },
-  { source: "DistilBERT", target: "BERT" },
-  { source: "XLNet-base", target: "XLNet" },
-  { source: "BaiduBERT", target: "BERT" },
-  { source: "xlnet-base-cased", target: "XLNet" },
-  { source: "Transformer-XL-wt103", target: "Transformer-XL" },
-  { source: "Bert-base", target: "BERT" },
-  { source: "DistilGPT2", target: "GPT-2" },
-  { source: "GPT-2-117M", target: "GPT-2" },
-  { source: "RoBERTa-base", target: "RoBERTa" },
-  { source: "Roberta-base", target: "RoBERTa" },
-  { source: "GPT-2-small", target: "GPT-2" },
-  { source: "GPT-2-medium", target: "GPT-2" },
-  { source: "GPT-2-large", target: "GPT-2" },
-  { source: "GPT-2-xl", target: "GPT-2" }
+
+var links = [
+  { source: "BERT", target: "NLP", type: "belongs to" },
+  { source: "BERT", target: "text classification", type: "applies to" },
+  { source: "BERT", target: "question answering", type: "applies to" },
+  { source: "GPT", target: "NLP", type: "belongs to" },
+  { source: "GPT", target: "language generation", type: "applies to" },
+  { source: "Transformer", target: "NLP", type: "belongs to" },
+  { source: "Transformer", target: "machine translation", type: "applies to" },
+  { source: "BioBERT", target: "biomedical text mining", type: "belongs to" },
+  { source: "BioBERT", target: "text classification", type: "applies to" },
+  { source: "GPT-3", target: "NLP", type: "belongs to" },
+  { source: "GPT-3", target: "language generation", type: "applies to" },
+  { source: "GPT-3", target: "question answering", type: "applies to" },
+  { source: "MIT", target: "Ian Goodfellow", type: "affiliated with" },
+  { source: "MIT", target: "Yoshua Bengio", type: "affiliated with" },
+  { source: "OpenAI", target: "Dario Amodei", type: "affiliated with" },
+  { source: "OpenAI", target: "Ian Goodfellow", type: "affiliated with" },
+  { source: "Ian Goodfellow", target: "MIT", type: "affiliated with" },
+  { source: "Ian Goodfellow", target: "OpenAI", type: "affiliated with" },
+  { source: "Yoshua Bengio", target: "MIT", type: "affiliated with" },
+  { source: "Dario Amodei", target: "OpenAI", type: "affiliated with" },
+  { source: "MNIST", target: "BERT", type: "used by" },
+  { source: "MNIST", target: "GPT", type: "used by" },
+  { source: "BioMedical Corpus", target: "BioBERT", type: "used by" },
+  { source: "WebText", target: "GPT-3", type: "used by" }
 ];
+
 
 // Data for the Financial Markets graph
 const financialNodes = [
-  {id: 'Stock Market'},
-  {id: 'Bond Market'},
-  {id: 'Forex Market'},
-  {id: 'Commodity Market'}
+{id: "Stock Markets", type: "market"},
+{id: "Forex Markets", type: "market"},
+{id: "Commodity Markets", type: "market"},
+{id: "Bond Markets", type: "market"},
+{id: "Derivatives Markets", type: "market"},
+{id: "Real Estate Markets", type: "market"},
+{id: "Cryptocurrency Markets", type: "market"},
+{id: "Investment Banks", type: "financial institution"},
+{id: "Hedge Funds", type: "financial institution"},
+{id: "Government Regulators", type: "regulatory agency"},
+{id: "Economic Indicators", type: "data"},
+{id: "Traders", type: "professional"},
+{id: "Brokers", type: "professional"},
+{id: "Trading Strategies", type: "tool"},
+{id: "Financial Instruments", type: "tool"},
+{id: "Market Participants", type: "category"},
+{id: "Market Data", type: "data"}
 ];
 
-const financialLinks = [
-  {source: 'Stock Market', target: 'Bond Market'},
-  {source: 'Stock Market', target: 'Forex Market'},
-  {source: 'Stock Market', target: 'Commodity Market'},
-  {source: 'Bond Market', target: 'Forex Market'},
-  {source: 'Bond Market', target: 'Commodity Market'},
-  {source: 'Forex Market', target: 'Commodity Market'}
+const financialLinks = var links = [
+{source: "Stock Markets", target: "Investment Banks", type: "participant"},
+{source: "Stock Markets", target: "Hedge Funds", type: "participant"},
+{source: "Stock Markets", target: "Government Regulators", type: "regulatory"},
+{source: "Forex Markets", target: "Investment Banks", type: "participant"},
+{source: "Forex Markets", target: "Hedge Funds", type: "participant"},
+{source: "Forex Markets", target: "Government Regulators", type: "regulatory"},
+{source: "Commodity Markets", target: "Investment Banks", type: "participant"},
+{source: "Commodity Markets", target: "Hedge Funds", type: "participant"},
+{source: "Commodity Markets", target: "Government Regulators", type: "regulatory"},
+{source: "Bond Markets", target: "Investment Banks", type: "participant"},
+{source: "Bond Markets", target: "Hedge Funds", type: "participant"},
+{source: "Bond Markets", target: "Government Regulators", type: "regulatory"},
+{source: "Derivatives Markets", target: "Investment Banks", type: "participant"},
+{source: "Derivatives Markets", target: "Hedge Funds", type: "participant"},
+{source: "Derivatives Markets", target: "Government Regulators", type: "regulatory"},
+{source: "Real Estate Markets", target: "Investment Banks", type: "participant"},
+{source: "Real Estate Markets", target: "Hedge Funds", type: "participant"},
+{source: "Real Estate Markets", target: "Government Regulators", type: "regulatory"},
+{source: "Cryptocurrency Markets", target: "Investment Banks", type: "participant"},
+{source: "Cryptocurrency Markets", target: "Hedge Funds", type: "participant"},
+{source: "Cryptocurrency Markets", target: "Government Regulators", type: "regulatory"},
+{source: "Investment Banks", target: "Traders", type: "employee"},
+{source: "Investment Banks", target: "Brokers", type: "employee"},
+{source: "Hedge Funds", target: "Traders", type: "employee"},
+{source: "Hedge Funds", target: "Brokers", type: "employee"},
+{source: "Government Regulators", target: "Economic Indicators", type: "data"},
+{source: "Traders", target: "Trading Strategies", type: "tool"},
+{source: "Traders", target: "Financial Instruments", type: "tool"},
+{source: "Brokers", target: "Trading Strategies", type: "tool"},
+{source: "Brokers", target: "Financial Instruments", type: "tool"},
+{source: "Financial Instruments", target: "Market Data", type: "data"},
+{source: "Market Participants", target: "Market Data", type: "data"}
 ];
 
 
@@ -146,16 +135,16 @@ const financialLinks = [
 // Set up the force-directed layout for the Large Language Models graph
 const simulation = d3.forceSimulation()
   .force('link', d3.forceLink().id(d => d.id))
-  .force('charge', d3.forceManyBody().strength(-500).distanceMax(100))
+  .force('charge', d3.forceManyBody().strength(-300).distanceMax(150))
   .force('center', d3.forceCenter(width / 2, height / 2));
-  
+ 
 // Set up the force-directed layout for Financial Markets
 const financialSimulation = d3.forceSimulation()
   .force('link', d3.forceLink().id(d => d.id))
-  .force('charge', d3.forceManyBody().strength(-500))
+  .force('charge', d3.forceManyBody().strength(-300).distanceMax(150))
   .force('center', d3.forceCenter(financialWidth / 2, financialHeight / 2));
-  
-  
+ 
+ 
 // Set up the drag functions
 function dragstarted(d) {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -192,6 +181,18 @@ const financialLink = financialSvg.append('g')
   .enter().append('line');
 
 
+// Add a label to each link showing its type
+const linkLabel = svg.append('g')
+  .attr('class', 'link-labels')
+  .selectAll('text')
+  .data(links)
+  .enter().append('text')
+  .style("font-size", "8px")
+  .style("fill", "white")
+  .text(function(d) { return d.type; })
+  .attr("text-anchor", "middle")
+  .attr("dy", "0");
+
 
 // Node elements
 
@@ -206,7 +207,7 @@ const node = svg.append('g')
     .on("start", dragstarted)
     .on("drag", dragged)
     .on("end", dragended));
-  
+ 
 
 // Set up the Financial Markets node elements
 const financialNode = financialSvg.append('g')
@@ -220,7 +221,7 @@ const financialNode = financialSvg.append('g')
     .on("drag", dragged)
     .on("end", dragended));
 
-  
+ 
 
 // Labels
 
@@ -232,7 +233,9 @@ const label = svg.append('g')
   .enter().append('text')
   .text(d => d.id)
   .attr('dy', '0.35em');
-  
+
+
+ 
 const financialLabel = financialSvg.append('g')
   .attr('class', 'financial-labels')
   .selectAll('text')
@@ -240,7 +243,7 @@ const financialLabel = financialSvg.append('g')
   .enter().append('text')
   .text(d => d.id)
   .attr('dy', '0.35em');
-  
+ 
 
 
 // Update positions
@@ -260,8 +263,23 @@ function ticked() {
   label
     .attr('x', d => d.x)
     .attr('y', d => d.y);
+   
+// Position the link labels halfway between the source and target nodes
+  linkLabel
+    .attr('x', d => (d.source.x + d.target.x) / 2)
+    .attr('y', d => (d.source.y + d.target.y) / 2);
+   
+// Rotate the link labels to follow the links
+  linkLabel.attr('transform', d => {
+    const x = (d.source.x + d.target.x) / 2;
+    const y = (d.source.y + d.target.y) / 2;
+    const dx = d.target.x - d.source.x;
+    const dy = d.target.y - d.source.y;
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    return `rotate(${angle}, ${x}, ${y}) translate(${d3.event.transform.x},${d3.event.transform.y}) scale(${d3.event.transform.k})`;
+  });
 }
-  
+ 
 
 // Update the position of the nodes and links for the Financial Markets graph
 function financialTicked() {
@@ -307,7 +325,7 @@ const zoom = d3.zoom()
 
 // Add the zoom behavior to the SVG element
 // Set the initial zoom level
-zoom.transform(svg, d3.zoomIdentity.scale(.7));
+zoom.transform(svg, d3.zoomIdentity.scale(1));
 
 svg.call(zoom);
 
@@ -316,6 +334,7 @@ function zoomed() {
   // Update the transform attribute of the nodes and labels group
   node.attr('transform', d3.event.transform);
   label.attr('transform', d3.event.transform);
+  linkLabel.attr('transform', d3.event.transform);
 
   // Update the transform attribute of the links group
   link.attr('transform', d3.event.transform);
