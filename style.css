@@ -6,6 +6,12 @@ body {
   background: #000;
 }
 
+body p{
+  font-family: sans-serif;
+  margin-top:-25px;
+  font-size: 14px;
+}
+
 /* Style the sidebar */
 #sidebar {
   width: 200px;
