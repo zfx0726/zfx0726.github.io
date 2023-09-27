@@ -79,3 +79,22 @@ svg {
     font-size: 11px;
     fill: #333;
 }
+
+
+/* Map Visualization Styling */
+.map {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.state {
+    stroke: #fff;
+    stroke-width: 1;
+    cursor: pointer;
+    transition: fill 0.3s;
+}
+
+.state:hover {
+    fill: #405d55;
+}

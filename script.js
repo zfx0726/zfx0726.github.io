@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     d3.json('https://zfx0726.github.io/data/visualization_data.json').then(function (data) {
         // Select the tabs container
         var tabsContainer = d3.select('#tabs-container');
-
+        
         if (tabsContainer.empty()) {
             console.error('Unable to find #tabs-container');
             return;
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     d3.select(this).classed('active-tab', true);
                     updateVisualization(data[d3.select(this).datum()]);
                 })
-                .datum(code); // Bind the billing code to the tab element as data
+                .datum(code);
         }
 
         // Initial visualization update
@@ -33,19 +33,77 @@ function updateVisualization(data) {
     // Update the visualization based on the selected billing code data
     var visualizationContainer = d3.select('#visualization-container');
     visualizationContainer.selectAll('*').remove(); // Clear previous visualization
-
+    
     // Append the billing_code_name as a title
     visualizationContainer.append('h2').text(data.billing_code_name);
-
-    // Create bar chart for provider_state
-    createBarChart(visualizationContainer, data.state_data, 'Average Negotiated Rate by State');
-
+    
+    // Create map visualization for provider_state
+    createMapVisualization(visualizationContainer, data.state_data, 'Average Negotiated Rate by State');
+    
     // Create bar chart for billing_class
     createBarChart(visualizationContainer, data.class_data, 'Average Negotiated Rate by Billing Class');
-
+    
     // Create bar chart for negotiation_arrangement
     createBarChart(visualizationContainer, data.arrangement_data, 'Average Negotiated Rate by Negotiation Arrangement');
 }
+
+function createMapVisualization(container, data, title) {
+    // Set the dimensions and margins of the graph
+    var margin = { top: 30, right: 30, bottom: 70, left: 60 },
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    // Append SVG and group element
+    var svg = container.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Load GeoJSON data
+    d3.json('gadm41_USA_1.json').then(function (us) {
+        // Create a geoPath generator and set the projection to fit the width and height
+        var path = d3.geoPath().projection(d3.geoIdentity().fitSize([width, height], us));
+
+        // Draw the map
+        svg.selectAll('path')
+            .data(us.features)
+            .enter().append('path')
+            .attr('d', path)
+            .attr('class', 'state')
+            .attr('fill', function (d) {
+                var state = d.properties.NAME_1;
+                return data[state] ? d3.interpolateBlues(data[state] / d3.max(Object.values(data))) : '#e0e0e0';
+            })
+            .on('mouseover', function (event, d) {
+                // Show tooltip
+                var state = d.properties.NAME_1;
+                tooltip.transition().duration(200).style("opacity", 0.9);
+                tooltip.html(state + "<br>" + (data[state] || 'No Data'))
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on('mouseout', function (d) {
+                // Hide tooltip
+                tooltip.transition().duration(500).style("opacity", 0);
+            });
+    });
+
+    // Tooltip
+    var tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
+    // Title
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
+        .text(title);
+}
+
 
 function createBarChart(container, data, title) {
     // Set the dimensions and margins of the graph
