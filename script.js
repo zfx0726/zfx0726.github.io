@@ -5,10 +5,10 @@ const width = +svg.attr("width");
 const height = +svg.attr("height");
 
 // Load GeoJSON data for US States
-d3.json("data/gadm41_USA_1.json", function(geoData) {
+d3.json("https://zfx0726.github.io/data/gadm41_USA_1.json", function(geoData) {
 
     // Load the healthcare data
-    d3.csv("data/th_sample_visualization.csv", function(data) {
+    d3.csv("https://zfx0726.github.io/data/th_sample_visualization.csv", function(data) {
 
         // Initialize the map projection
         const projection = d3.geoAlbersUsa().fitSize([width, height], geoData);
