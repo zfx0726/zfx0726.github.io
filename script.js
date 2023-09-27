@@ -1,4 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Define the state code mapping
+    const stateCodeMapping = {
+    '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO', 
+    '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL', '13': 'GA', '15': 'HI', 
+    '16': 'ID', '17': 'IL', '18': 'IN', '19': 'IA', '20': 'KS', '21': 'KY', 
+    '22': 'LA', '23': 'ME', '24': 'MD', '25': 'MA', '26': 'MI', '27': 'MN', 
+    '28': 'MS', '29': 'MO', '30': 'MT', '31': 'NE', '32': 'NV', '33': 'NH', 
+    '34': 'NJ', '35': 'NM', '36': 'NY', '37': 'NC', '38': 'ND', '39': 'OH', 
+    '40': 'OK', '41': 'OR', '42': 'PA', '44': 'RI', '45': 'SC', '46': 'SD', 
+    '47': 'TN', '48': 'TX', '49': 'UT', '50': 'VT', '51': 'VA', '53': 'WA', 
+    '54': 'WV', '55': 'WI', '56': 'WY', '72': 'PR'
+};
+
     Promise.all([
         d3.json('https://zfx0726.github.io/data/visualization_data.json'),
         d3.json('https://zfx0726.github.io/data/gz_2010_us_040_00_5m.json') // Loading GeoJSON file
@@ -79,15 +92,18 @@ function createMapVisualization(container, data, title, us) {
         .style("stroke", "#fff")
         .style("stroke-width", "1")
         .style("fill", function (d) {
-            var value = data[d.properties.STUSPS];
+            // Use state code mapping to associate pricing data
+            var stateAlphaCode = stateCodeMapping[d.properties.STATE];
+            var value = data[stateAlphaCode];
             return value ? d3.interpolateBlues(value / 100) : "#ccc"; // Adjust color scale
         })
         .on("mouseover", function (event, d) {
-            // Show tooltip on hover
+            // Use state code mapping to show tooltip
+            var stateAlphaCode = stateCodeMapping[d.properties.STATE];
             div.transition()
                 .duration(200)
                 .style("opacity", .9);
-            div.html(d.properties.STUSPS + "<br>" + (data[d.properties.STUSPS] || 0))
+            div.html(stateAlphaCode + "<br>" + (data[stateAlphaCode] || 0))
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
         })
@@ -98,14 +114,16 @@ function createMapVisualization(container, data, title, us) {
                 .style("opacity", 0);
         });
 
+
     // Append title to the map
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .style("font-size", "20px")
-        .text(title);
-}
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", 30)
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .text(title);
+    }
+
 
 
 function createBarChart(container, data, title) {
