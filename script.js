@@ -61,7 +61,7 @@ function createMapVisualization(container, data, title) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Load GeoJSON data
-    d3.json('https://zfx0726.github.io/data/gadm41_USA_2.json').then(function (us) {
+    d3.json('https://storage.googleapis.com/mapsdevsite/json/states.js').then(function (us) {
         // Create a geoPath generator and set the projection to fit the width and height
         var path = d3.geoPath().projection(d3.geoIdentity().fitSize([width, height], us));
 
