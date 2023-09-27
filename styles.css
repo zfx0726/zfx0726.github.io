@@ -1,0 +1,22 @@
+
+body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}
+
+#map-container {
+    position: relative;
+    width: 80%;
+    margin: auto;
+}
+
+#us-map {
+    width: 100%;
+    height: 500px;
+}
+
+#billing-class-filter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}

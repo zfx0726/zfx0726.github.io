@@ -1,41 +1,17 @@
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Knowledge Graphs</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-  </head>
-  <body>
-    <div id="sidebar">
-      <h1>Knowledge Graphs</h1>
-      <ul>
-        <li data-graph="large-language-models">Large Language Models</li>
-        <li class="selected" data-graph="clinical-trials">Clinical Trials</li>
-        <li data-graph="financial-markets">Financial Markets</li>
-        <li data-graph="medical-knowledge">Medical Knowledge</li>
-      </ul>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Map Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="map-container">
+        <select id="billing-class-filter"></select>
+        <svg id="us-map"></svg>
     </div>
-    <div id="main">
-      <div id="large-language-models" class="graph">
-        <h2>Large Language Models</h2>
-        <p>Scroll to zoom. Click to navigate and drag chart.</p>
-        <div id="chart"></div>
-      </div>
-      <div id="clinical-trials" class="graph selected">
-        <h2>Clinical Trials</h2>
-        <p>Scroll to zoom. Click to navigate and drag chart.</p>
-        <div id="clinical-trials-chart"></div>
-      </div>
-      <div id="financial-markets" class="graph">
-        <h2>Financial Markets</h2>
-        <p>Scroll to zoom. Click to navigate and drag chart.</p>
-        <div id="financial-markets-chart"></div>
-      </div>
-      <div id="medical-knowledge" class="graph">
-        <h2>Medical Knowledge</h2>
-        <p>This knowledge graph is not yet available. Please check back later.</p>
-      </div>
-    </div>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="script.js"></script>
-  </body>
+</body>
 </html>
