@@ -87,8 +87,8 @@ function createMapVisualization(container, data, title, us) {
   // Determine the maximum value in your data to adjust the color scale dynamically
     var maxValue = d3.max(Object.values(data));
 
-    // Create a color scale based on the maximum value
-    var colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, maxValue]);
+    // Create a logarithmic color scale based on the maximum value
+    var colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, Math.log(maxValue + 1)]);
 
 
 
@@ -100,28 +100,26 @@ function createMapVisualization(container, data, title, us) {
             .style("stroke", "#fff")
             .style("stroke-width", "1")
             .style("fill", function (d) {
-                // Use state code mapping to associate pricing data
                 var stateAlphaCode = stateCodeMapping[d.properties.STATE];
                 var value = data[stateAlphaCode];
-
-                // Log the state and value to the console (you can remove this line once the debugging is done)
-                console.log("State:", stateAlphaCode, "Value:", value);
-
-                // Use the color scale to determine the fill color
-                return value ? colorScale(value) : "#ccc";
+                
+                // Use the logarithmic color scale to determine the fill color
+                return value ? colorScale(Math.log(value + 1)) : "#ccc";
             })
 
 
         .on("mouseover", function (event, d) {
-            // Use state code mapping to show tooltip
             var stateAlphaCode = stateCodeMapping[d.properties.STATE];
+            var value = data[stateAlphaCode] || 0;
+
             div.transition()
                 .duration(200)
                 .style("opacity", .9);
-            div.html(stateAlphaCode + "<br>" + (data[stateAlphaCode] || 0))
+            div.html(stateAlphaCode + "<br>" + "$" + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
         })
+
         .on("mouseout", function (d) {
             // Hide tooltip on mouseout
             div.transition()
