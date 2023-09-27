@@ -110,17 +110,19 @@ function createMapVisualization(container, data, title, us) {
 
         .on("mouseover", function (event, d) {
           console.log(d); // log the data object to inspect its structure
-            var stateAlphaCode = stateCodeMapping[d.properties.STATE];
-            var value = data[stateAlphaCode] || 0;
+            if(d && d.properties && 'STATE' in d.properties) {
+                var stateAlphaCode = stateCodeMapping[d.properties.STATE];
+                var value = data[stateAlphaCode] || 0;
+                console.log(value); // log the data object to inspect its structure
+                console.log(data); // log the data object to inspect its structure
+                console.log(stateAlphaCode); // log the data object to inspect its structure
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+            } else {
+                console.error('Unexpected data structure: ', d);
+            }
 
-            console.log(value); // log the data object to inspect its structure
-            console.log(data); // log the data object to inspect its structure
-            console.log(stateAlphaCode); // log the data object to inspect its structure
-
-
-            div.transition()
-                .duration(200)
-                .style("opacity", .9);
             div.html(stateAlphaCode + "<br>" + "$" + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
