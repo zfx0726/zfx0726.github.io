@@ -1,22 +1,56 @@
-
 body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
+    font-family: "Arial, sans-serif";
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
 }
 
-#map-container {
-    position: relative;
-    width: 80%;
-    margin: auto;
+#tabs-container {
+    background-color: #ffffff;
+    padding: 10px;
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
 }
 
-#us-map {
-    width: 100%;
-    height: 500px;
+.tab {
+    cursor: pointer;
+    padding: 10px 20px;
+    display: inline-block;
+    background: #e6e6e6;
+    margin-right: 5px;
+    border-radius: 5px;
+    transition: background 0.3s;
 }
 
-#billing-class-filter {
+.tab:hover {
+    background: #d4d4d4;
+}
+
+.active-tab {
+    background: #bdbdbd;
+}
+
+.visualization {
+    margin: 20px;
+    padding: 20px;
+}
+
+
+/* Tooltip styling */
+.tooltip {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    text-align: center;
+    width: 80px;
+    height: 28px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+/* Bar chart styling */
+rect {
+    stroke-width: 2;
+    stroke: white;
 }
