@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Load the JSON data file
-    d3.json('visualization_data.json').then(function (data) {
+    d3.json('https://zfx0726.github.io/data/visualization_data.json').then(function (data) {
         // Select the tabs container
         var tabsContainer = d3.select('#tabs-container');
 
