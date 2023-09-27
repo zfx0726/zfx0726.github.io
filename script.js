@@ -123,7 +123,7 @@ function createMapVisualization(container, data, title, us) {
                 console.error('Unexpected data structure: ', d);
             }
 
-            div.html(stateAlphaCode + "<br>" + "$" + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+            div.html(stateAlphaCode + "<br>" + "$" + (value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
         })
