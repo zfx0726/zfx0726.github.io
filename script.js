@@ -1,5 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Define the state code mapping
+// Define the state code mapping
     const stateCodeMapping = {
     '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO', 
     '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL', '13': 'GA', '15': 'HI', 
@@ -12,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     '54': 'WV', '55': 'WI', '56': 'WY', '72': 'PR'
 };
 
+document.addEventListener('DOMContentLoaded', function () {
     Promise.all([
         d3.json('https://zfx0726.github.io/data/visualization_data.json'),
         d3.json('https://zfx0726.github.io/data/gz_2010_us_040_00_5m.json') // Loading GeoJSON file
@@ -85,18 +85,19 @@ function createMapVisualization(container, data, title, us) {
         .style("opacity", 0);
 
     svg.selectAll("path")
-        .data(us.features)
-        .enter()
-        .append("path")
-        .attr("d", path)
-        .style("stroke", "#fff")
-        .style("stroke-width", "1")
-        .style("fill", function (d) {
-            // Use state code mapping to associate pricing data
-            var stateAlphaCode = stateCodeMapping[d.properties.STATE];
-            var value = data[stateAlphaCode];
-            return value ? d3.interpolateBlues(value / 100) : "#ccc"; // Adjust color scale
-        })
+            .data(us.features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .style("stroke", "#fff")
+            .style("stroke-width", "1")
+            .style("fill", function (d) {
+                // Use state code mapping to associate pricing data
+                var stateAlphaCode = stateCodeMapping[d.properties.STATE]; // This should now work
+                var value = data[stateAlphaCode];
+                return value ? d3.interpolateBlues(value / 100) : "#ccc";
+            })
+
         .on("mouseover", function (event, d) {
             // Use state code mapping to show tooltip
             var stateAlphaCode = stateCodeMapping[d.properties.STATE];
