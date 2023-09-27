@@ -84,6 +84,14 @@ function createMapVisualization(container, data, title, us) {
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+  // Determine the maximum value in your data to adjust the color scale dynamically
+    var maxValue = d3.max(Object.values(data));
+
+    // Create a color scale based on the maximum value
+    var colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, maxValue]);
+
+
+
     svg.selectAll("path")
             .data(us.features)
             .enter()
@@ -93,10 +101,16 @@ function createMapVisualization(container, data, title, us) {
             .style("stroke-width", "1")
             .style("fill", function (d) {
                 // Use state code mapping to associate pricing data
-                var stateAlphaCode = stateCodeMapping[d.properties.STATE]; // This should now work
+                var stateAlphaCode = stateCodeMapping[d.properties.STATE];
                 var value = data[stateAlphaCode];
-                return value ? d3.interpolateBlues(value / 100) : "#ccc";
+
+                // Log the state and value to the console (you can remove this line once the debugging is done)
+                console.log("State:", stateAlphaCode, "Value:", value);
+
+                // Use the color scale to determine the fill color
+                return value ? colorScale(value) : "#ccc";
             })
+
 
         .on("mouseover", function (event, d) {
             // Use state code mapping to show tooltip
