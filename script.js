@@ -109,7 +109,10 @@ function createMapVisualization(container, data, title, us) {
 
 
         .on("mouseover", function (event, d) {
-          console.log(d); // log the data object to inspect its structure
+              console.log('Data:', d);
+              console.log('Event:', event);
+              console.log('This:', this);
+
             if(d && d.properties && 'STATE' in d.properties) {
                 var stateAlphaCode = stateCodeMapping[d.properties.STATE];
                 var value = data[stateAlphaCode] || 0;
