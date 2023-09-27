@@ -100,7 +100,7 @@ function createMapVisualization(container, data, title, us) {
             .style("stroke", "#fff")
             .style("stroke-width", "1")
             .style("fill", function (d) {
-                var stateAlphaCode = stateCodeMapping[d];
+                var stateAlphaCode = stateCodeMapping[d.properties.STATE];
                 var value = data[stateAlphaCode];
                 
                 // Use the logarithmic color scale to determine the fill color
@@ -110,9 +110,13 @@ function createMapVisualization(container, data, title, us) {
 
         .on("mouseover", function (event, d) {
           console.log(d); // log the data object to inspect its structure
-
-            var stateAlphaCode = stateCodeMapping[d];
+            var stateAlphaCode = stateCodeMapping[d.properties.STATE];
             var value = data[stateAlphaCode] || 0;
+
+            console.log(value); // log the data object to inspect its structure
+            console.log(data); // log the data object to inspect its structure
+            console.log(stateAlphaCode); // log the data object to inspect its structure
+
 
             div.transition()
                 .duration(200)
