@@ -2,13 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Interactive Data Visualization</title>
     <link rel="stylesheet" href="styles.css">
-    <title>Healthcare Analysis Visualization</title>
 </head>
 <body>
-    <div id="tabs-container"></div>
-    <div id="visualization-container" class="visualization"></div>
+    <div id="container">
+        <select id="billing-code">
+            <!-- Populate with billing codes and names -->
+        </select>
+        <div id="map"></div>
+        <div id="data-box">
+            <label id="data-label" for="data-value"></label>
+            <span id="data-value"></span>
+        </div>
+        <div id="data-caret"></div>
+        <div id="data-min"></div>
+        <div id="data-max"></div>
+    </div>
     <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
     <script src="script.js"></script>
 </body>
 </html>

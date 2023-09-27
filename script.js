@@ -1,180 +1,105 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Load the JSON data file
-    d3.json('https://zfx0726.github.io/data/visualization_data.json').then(function (data) {
-        // Select the tabs container
-        var tabsContainer = d3.select('#tabs-container');
-        
-        if (tabsContainer.empty()) {
-            console.error('Unable to find #tabs-container');
-            return;
-        }
+const mapStyle = [
+  { stylers: [{ visibility: "off" }] },
+  { featureType: "landscape", elementType: "geometry", stylers: [{ visibility: "on" }, { color: "#fcfcfc" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ visibility: "on" }, { color: "#bfd4ff" }] },
+];
 
-        // Create tabs for each billing code
-        for (var code in data) {
-            tabsContainer.append('div')
-                .attr('class', 'tab')
-                .text(code + ' - ' + data[code].billing_code_name)
-                .on('click', function (d, i) {
-                    // Handle tab click, update visualization
-                    d3.selectAll('.tab').classed('active-tab', false);
-                    d3.select(this).classed('active-tab', true);
-                    updateVisualization(data[d3.select(this).datum()]);
-                })
-                .datum(code);
-        }
+let map;
+let dataMin = Number.MAX_VALUE, dataMax = -Number.MAX_VALUE;
 
-        // Initial visualization update
-        updateVisualization(data[Object.keys(data)[0]]);
-        d3.select('.tab').classed('active-tab', true);
-    });
-});
+function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 40, lng: -100 },
+    zoom: 4,
+    styles: mapStyle,
+  });
 
-function updateVisualization(data) {
-    // Update the visualization based on the selected billing code data
-    var visualizationContainer = d3.select('#visualization-container');
-    visualizationContainer.selectAll('*').remove(); // Clear previous visualization
-    
-    // Append the billing_code_name as a title
-    visualizationContainer.append('h2').text(data.billing_code_name);
-    
-    // Create map visualization for provider_state
-    createMapVisualization(visualizationContainer, data.state_data, 'Average Negotiated Rate by State');
-    
-    // Create bar chart for billing_class
-    createBarChart(visualizationContainer, data.class_data, 'Average Negotiated Rate by Billing Class');
-    
-    // Create bar chart for negotiation_arrangement
-    createBarChart(visualizationContainer, data.arrangement_data, 'Average Negotiated Rate by Negotiation Arrangement');
+  map.data.setStyle(styleFeature);
+  map.data.addListener("mouseover", mouseInToRegion);
+  map.data.addListener("mouseout", mouseOutOfRegion);
+
+  const selectBox = document.getElementById("billing-code");
+  google.maps.event.addDomListener(selectBox, "change", () => {
+    clearData();
+    loadData(selectBox.options[selectBox.selectedIndex].value);
+  });
+
+  loadMapShapes();
 }
 
-function createMapVisualization(container, data, title) {
-    // Set the dimensions and margins of the graph
-    var margin = { top: 30, right: 30, bottom: 70, left: 60 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
-
-    // Append SVG and group element
-    var svg = container.append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // Load GeoJSON data
-    d3.json('https://storage.googleapis.com/mapsdevsite/json/states.js').then(function (us) {
-        // Create a geoPath generator and set the projection to fit the width and height
-        var path = d3.geoPath().projection(d3.geoIdentity().fitSize([width, height], us));
-
-        // Draw the map
-        svg.selectAll('path')
-            .data(us.features)
-            .enter().append('path')
-            .attr('d', path)
-            .attr('class', 'state')
-            .attr('fill', function (d) {
-                var state = d.properties.NAME_1;
-                return data[state] ? d3.interpolateBlues(data[state] / d3.max(Object.values(data))) : '#e0e0e0';
-            })
-            .on('mouseover', function (event, d) {
-                // Show tooltip
-                var state = d.properties.NAME_1;
-                tooltip.transition().duration(200).style("opacity", 0.9);
-                tooltip.html(state + "<br>" + (data[state] || 'No Data'))
-                    .style("left", (event.pageX) + "px")
-                    .style("top", (event.pageY - 28) + "px");
-            })
-            .on('mouseout', function (d) {
-                // Hide tooltip
-                tooltip.transition().duration(500).style("opacity", 0);
-            });
-    });
-
-    // Tooltip
-    var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-
-    // Title
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text(title);
+function loadMapShapes() {
+  map.data.loadGeoJson("https://storage.googleapis.com/mapsdevsite/json/states.js", { idPropertyName: "STATE" }, () => {
+    google.maps.event.trigger(document.getElementById("billing-code"), "change");
+  });
 }
 
+function loadData(code) {
+  // Here you would replace with a call to your API or data source
+  d3.json('https://zfx0726.github.io/data/visualization_data.json').then((data) => {
+    const stateData = data[code].state_data;
 
-function createBarChart(container, data, title) {
-    // Set the dimensions and margins of the graph
-    var margin = { top: 30, right: 30, bottom: 70, left: 60 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    for (const state in stateData) {
+      const value = stateData[state];
 
-    // Append SVG and group element
-    var svg = container.append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      if (value < dataMin) dataMin = value;
+      if (value > dataMax) dataMax = value;
 
-    // X axis
-    var x = d3.scaleBand()
-        .range([0, width])
-        .domain(Object.keys(data))
-        .padding(0.2);
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
-        .selectAll("text")
-        .attr("transform", "translate(-10,0)rotate(-45)")
-        .style("text-anchor", "end");
+      const feature = map.data.getFeatureById(state);
+      if (feature) feature.setProperty("value", value);
+    }
 
-    // Add Y axis
-    var y = d3.scaleLinear()
-        .domain([0, d3.max(Object.values(data))])
-        .range([height, 0]);
-    svg.append("g").call(d3.axisLeft(y));
-
-    // Bars
-    svg.selectAll("mybar")
-        .data(Object.entries(data))
-        .enter()
-        .append("rect")
-        .attr("x", function (d) { return x(d[0]); })
-        .attr("y", function (d) { return y(d[1]); })
-        .attr("width", x.bandwidth())
-        .attr("height", function (d) { return height - y(d[1]); })
-        .attr("fill", "#69b3a2")
-        .on("mouseover", function (event, d) {
-            d3.select(this).attr("fill", "#405d55");
-            // Show tooltip
-            div.transition()
-                .duration(200)
-                .style("opacity", 0.9);
-            div.html(d[0] + "<br>" + d[1])
-                .style("left", (event.pageX) + "px")
-                .style("top", (event.pageY - 28) + "px");
-        })
-        .on("mouseout", function (d) {
-            d3.select(this).attr("fill", "#69b3a2");
-            // Hide tooltip
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
-        });
-
-    // Title
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text(title);
-
-    // Tooltip
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+    document.getElementById("data-min").textContent = dataMin.toLocaleString();
+    document.getElementById("data-max").textContent = dataMax.toLocaleString();
+  });
 }
+
+function clearData() {
+  dataMin = Number.MAX_VALUE;
+  dataMax = -Number.MAX_VALUE;
+  map.data.forEach((feature) => {
+    feature.setProperty("value", undefined);
+  });
+  document.getElementById("data-box").style.display = "none";
+}
+
+function styleFeature(feature) {
+  const low = [5, 69, 54];
+  const high = [151, 83, 34];
+  const delta = (feature.getProperty("value") - dataMin) / (dataMax - dataMin);
+  const color = [];
+  for (let i = 0; i < 3; i++) {
+    color.push((high[i] - low[i]) * delta + low[i]);
+  }
+  let showRow = true;
+  if (feature.getProperty("value") == null || isNaN(feature.getProperty("value"))) {
+    showRow = false;
+  }
+  let outlineWeight = 0.5, zIndex = 1;
+  if (feature.getProperty("state") === "hover") {
+    outlineWeight = zIndex = 2;
+  }
+  return {
+    strokeWeight: outlineWeight,
+    strokeColor: "#fff",
+    zIndex: zIndex,
+    fillColor: "hsl(" + color[0] + "," + color[1] + "%," + color[2] + "%)",
+    fillOpacity: 0.75,
+    visible: showRow,
+  };
+}
+
+function mouseInToRegion(e) {
+  e.feature.setProperty("state", "hover");
+  const percent = ((e.feature.getProperty("value") - dataMin) / (dataMax - dataMin)) * 100;
+  document.getElementById("data-label").textContent = e.feature.getProperty("NAME");
+  document.getElementById("data-value").textContent = e.feature.getProperty("value").toLocaleString();
+  document.getElementById("data-box").style.display = "block";
+  document.getElementById("data-caret").style.display = "block";
+  document.getElementById("data-caret").style.paddingLeft = percent + "%";
+}
+
+function mouseOutOfRegion(e) {
+  e.feature.setProperty("state", "normal");
+}
+
+window.initMap = initMap;
