@@ -73,7 +73,8 @@ d3.json(geojsonUrl).then(stateData => {
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(state + '<br>' + (avgRateValue !== 'Unknown Rate' ? '$' + avgRateValue.toFixed(2) : avgRateValue))
+                tooltip.html(state + '<br>' + (avgRateValue !== 'Unknown Rate' ? '$' + avgRateValue.toLocaleString('en-US', { maximumFractionDigits: 0 }) : avgRateValue))
+
                             .style('left', (event.pageX) + 'px')
                             .style('top', (event.pageY - 28) + 'px')
                     .attr('stroke', '#ff4500') // Or any color that suits your design
@@ -135,7 +136,8 @@ d3.json(geojsonUrl).then(stateData => {
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
+                tooltip.html(state + '<br>' + (avgRateStr !== 'Unknown Rate' ? '$' + avgRateStr.toLocaleString('en-US', { maximumFractionDigits: 0 }) : avgRateStr))
+
                     .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
                     .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px')  // Position the tooltip above the cursor
                     .attr('fill', '#ff4500'); // Or any color that suits your design
