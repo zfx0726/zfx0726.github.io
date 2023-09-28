@@ -65,7 +65,7 @@ d3.json(geojsonUrl).then(stateData => {
                     return colorScale(avgRateValue);
             })
             .attr('stroke', 'white')
-            .on('mouseover', d => {
+            .on('mouseover', function(d) {
                 const stateName = d.properties.NAME || 'Unknown State'; // Handle undefined state name
                 tooltip.transition()
                     .duration(200)
@@ -74,7 +74,7 @@ d3.json(geojsonUrl).then(stateData => {
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
-            .on('mouseout', d => {
+            .on('mouseout', function(d) {
                 tooltip.transition()
                     .duration(500)
                     .style('opacity', 0);
@@ -118,7 +118,7 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('width', xScale.bandwidth())
             .attr('height', d => height - yScale(d.avgRate))
             .attr('fill', d => colorScale(d.avgRate))
-            .on('mouseover', d => {
+            .on('mouseover', function(d) {
                 const avgRateStr = d.avgRate ? d.avgRate.toFixed(2) : 'Unknown Rate'; // Handle undefined average rate
                 tooltip.transition()
                     .duration(200)
@@ -127,7 +127,7 @@ d3.json(geojsonUrl).then(stateData => {
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
-            .on('mouseout', d => {
+            .on('mouseout', function(d) {
                 tooltip.transition()
                     .duration(500)
                     .style('opacity', 0);
