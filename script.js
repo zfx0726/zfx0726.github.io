@@ -132,11 +132,11 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('fill', d => colorScale(d.avgRate))
             .on('mouseover', (event, d) => { // Receive event as the first argument
                 const state = d.state || 'Unknown State'; // Access state abbreviation directly from d.state
-                const avgRateStr = d.avgRate ? `$${d.avgRate.toFixed(0).toLocaleString()}` : 'Unknown Rate';
+                const avgRateStr = d.avgRate ? `$${d.avgRate.toFixed(0).toLocaleString('en-US', { maximumFractionDigits: 0 })}` : 'Unknown Rate';
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(state + '<br>' + (avgRateStr !== 'Unknown Rate' ? '$' + avgRateStr.toLocaleString('en-US', { maximumFractionDigits: 0 }) : avgRateStr))
+                tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
 
                     .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
                     .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px')  // Position the tooltip above the cursor
