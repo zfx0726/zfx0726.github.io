@@ -50,29 +50,27 @@ d3.json(geojsonUrl).then(stateData => {
 
         colorScale.domain([minRate, maxRate]);
 
-        // Updated map hovering logic to fix the 'NAME' property access issue
+        // Correctly match states and handle undefined values
         svgMap.selectAll('path')
             .data(stateData.features)
-            .enter().append('path')
+            .enter()
+            .append('path')
             .attr('d', path)
-            .attr('class', 'state')
             .attr('fill', d => {
-                // Check if properties are defined before accessing 'NAME'
-                const stateName = d.properties ? d.properties.NAME : null;
-                if (!stateName) return '#ccc';  // Use a default color if state name is not available
                 
-                // Rest of the logic remains the same
-                const stateAbbreviation = stateNumberMapping[d.properties.STATE];
-                const avgRate = avgRates[stateAbbreviation] || 0;  // Handle undefined average rate
-                return colorScale(avgRate);
+    const stateNumber = d.properties.STATE;
+    const state = stateNumberMapping[stateNumber] || 'Unknown State'; // Correctly access the state abbreviation from GeoJSON data
+                    const avgRate = stateRates[state] || [];
+    const avgRateValue = avgRate.length > 0 ? d3.mean(avgRate) : minRate;
+                    return colorScale(avgRateValue);
             })
+            .attr('stroke', 'white')
             .on('mouseover', d => {
-                // Check if properties are defined before accessing 'NAME'
-                const stateName = d.properties ? d.properties.NAME : 'Unknown State';
+                const stateName = d.properties.NAME || 'Unknown State'; // Handle undefined state name
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(stateName + ' (' + stateNumberMapping[d.properties.STATE] + ')')
+                tooltip.html(stateName)
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
@@ -120,15 +118,17 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('width', xScale.bandwidth())
             .attr('height', d => height - yScale(d.avgRate))
             .attr('fill', d => colorScale(d.avgRate))
-            .on('mouseover', d => {
-                const avgRateStr = d.avgRate ? d.avgRate.toFixed(2) : 'Unknown Rate'; // Handle undefined average rate
+            .on('mouseover', (event, d) => { // Receive event as the first argument
+                const state = d.state || 'Unknown State'; // Access state abbreviation directly from d.state
+                const avgRateStr = d.avgRate ? d.avgRate.toFixed(2) : 'Unknown Rate'; // Correctly handle undefined average rate
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                    tooltip.html(stateNumberMapping[d.state] + ' (' + d.state + ')' + '<br>' + avgRateStr)
-                    .style('left', (d3.event.pageX) + 'px')
-                    .style('top', (d3.event.pageY - 28) + 'px');
+                tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
+                    .style('left', (event.pageX) + 'px') // Correctly access pageX from event object
+                    .style('top', (event.pageY - 28) + 'px'); // Correctly access pageY from event object
             })
+
             .on('mouseout', d => {
                 tooltip.transition()
                     .duration(500)
