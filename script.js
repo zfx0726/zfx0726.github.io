@@ -66,11 +66,12 @@ d3.json(geojsonUrl).then(stateData => {
             })
             .attr('stroke', 'white')
             .on('mouseover', (event, d) => { // Receive event as the first argument
-                const stateName = d.properties ? d.properties.NAME : 'Unknown State'; // Handle undefined properties object
+                const state = d.state || 'Unknown State'; // Access state abbreviation directly from d.state
+                const avgRateStr = d.avgRate ? `$${d.avgRate.toFixed(0).toLocaleString()}` : 'Unknown Rate';
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(stateName)
+                tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
                     .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
                     .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');  // Position the tooltip above the cursor
             })
@@ -121,7 +122,7 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('fill', d => colorScale(d.avgRate))
             .on('mouseover', (event, d) => { // Receive event as the first argument
                 const state = d.state || 'Unknown State'; // Access state abbreviation directly from d.state
-                const avgRateStr = d.avgRate ? d.avgRate.toFixed(2) : 'Unknown Rate'; // Correctly handle undefined average rate
+                const avgRateStr = d.avgRate ? `$${d.avgRate.toFixed(0).toLocaleString()}` : 'Unknown Rate';
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
