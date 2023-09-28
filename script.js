@@ -15,7 +15,21 @@ document.addEventListener('DOMContentLoaded', function () {
     Promise.all([
         d3.json('https://zfx0726.github.io/data/visualization_data.json'),
         d3.json('https://zfx0726.github.io/data/gz_2010_us_040_00_5m.json') // Loading GeoJSON file
-    ]).then(function ([data, us]) {
+    ]).then(function ([data]) {
+
+      // Extract data
+          let us = data[0];
+          let visualization_data = data[1];
+          
+          // Create a map to hold state prices
+          let statePrices = new Map();
+          visualization_data.forEach(d => {
+              // Assuming that state_data contains the state code and price
+              Object.entries(d.state_data).forEach(([state, price]) => {
+                  statePrices.set(state, price);
+              });
+          });
+
         // Select the tabs container
         var tabsContainer = d3.select('#tabs-container');
 
@@ -108,28 +122,17 @@ function createMapVisualization(container, data, title, us) {
             })
 
 
-        .on("mouseover", function (event, d) {
-              console.log('Data:', d);
-              console.log('Event:', event);
-              console.log('This:', this);
-
-            if(d && d.properties && 'STATE' in d.properties) {
-                var stateAlphaCode = stateCodeMapping[d.properties.STATE];
-                var value = data[stateAlphaCode] || 0;
-                console.log(value); // log the data object to inspect its structure
-                console.log(data); // log the data object to inspect its structure
-                console.log(stateAlphaCode); // log the data object to inspect its structure
-                div.transition()
-                    .duration(200)
-                    .style("opacity", .9);
-            } else {
-                console.error('Unexpected data structure: ', d);
-            }
-
-            div.html(stateAlphaCode + "<br>" + "$" + (value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
-                .style("left", (event.pageX) + "px")
-                .style("top", (event.pageY - 28) + "px");
-        })
+        .on('mouseover', function(event, d) {
+                // Assuming that state code is available in the properties.STATE field of GeoJSON data
+                let stateCode = d.properties.STATE;
+                let price = statePrices.get(stateCode) || 'N/A'; // Get the price from the map
+                tooltip.transition()
+                       .duration(200)
+                       .style('opacity', .9);
+                tooltip.html('State: ' + d.properties.NAME + '<br>Price: ' + price)
+                       .style('left', (event.pageX) + 'px')
+                       .style('top', (event.pageY - 28) + 'px');
+            })
 
         .on("mouseout", function (d) {
             // Hide tooltip on mouseout
