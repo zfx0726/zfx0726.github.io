@@ -50,27 +50,29 @@ d3.json(geojsonUrl).then(stateData => {
 
         colorScale.domain([minRate, maxRate]);
 
-        // Correctly match states and handle undefined values
+        // Updated map hovering logic to fix the 'NAME' property access issue
         svgMap.selectAll('path')
             .data(stateData.features)
-            .enter()
-            .append('path')
+            .enter().append('path')
             .attr('d', path)
+            .attr('class', 'state')
             .attr('fill', d => {
+                // Check if properties are defined before accessing 'NAME'
+                const stateName = d.properties ? d.properties.NAME : null;
+                if (!stateName) return '#ccc';  // Use a default color if state name is not available
                 
-    const stateNumber = d.properties.STATE;
-    const state = stateNumberMapping[stateNumber] || 'Unknown State'; // Correctly access the state abbreviation from GeoJSON data
-                    const avgRate = stateRates[state] || [];
-    const avgRateValue = avgRate.length > 0 ? d3.mean(avgRate) : minRate;
-                    return colorScale(avgRateValue);
+                // Rest of the logic remains the same
+                const stateAbbreviation = stateNumberMapping[d.properties.STATE];
+                const avgRate = avgRates[stateAbbreviation] || 0;  // Handle undefined average rate
+                return colorScale(avgRate);
             })
-            .attr('stroke', 'white')
             .on('mouseover', d => {
-                const stateName = d.properties.NAME || 'Unknown State'; // Handle undefined state name
+                // Check if properties are defined before accessing 'NAME'
+                const stateName = d.properties ? d.properties.NAME : 'Unknown State';
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(stateName)
+                tooltip.html(stateName + ' (' + stateNumberMapping[d.properties.STATE] + ')')
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
