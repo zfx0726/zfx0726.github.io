@@ -1,91 +1,127 @@
 
-// Define the state code mapping
-const stateCodeMapping = {
-    '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO', 
-    '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL', '13': 'GA', '15': 'HI', 
-    '16': 'ID', '17': 'IL', '18': 'IN', '19': 'IA', '20': 'KS', '21': 'KY', 
-    '22': 'LA', '23': 'ME', '24': 'MD', '25': 'MA', '26': 'MI', '27': 'MN', 
-    '28': 'MS', '29': 'MO', '30': 'MT', '31': 'NE', '32': 'NV', '33': 'NH', 
-    '34': 'NJ', '35': 'NM', '36': 'NY', '37': 'NC', '38': 'ND', '39': 'OH', 
-    '40': 'OK', '41': 'OR', '42': 'PA', '44': 'RI', '45': 'SC', '46': 'SD', 
-    '47': 'TN', '48': 'TX', '49': 'UT', '50': 'VT', '51': 'VA', '53': 'WA', 
-    '54': 'WV', '55': 'WI', '56': 'WY', '72': 'PR'
-};
+// Load the GeoJSON and CSV data
+const geojsonUrl = 'https://zfx0726.github.io/data/gz_2010_us_040_00_5m.json'; // Update the path as per your hosting
+const csvUrl = 'https://zfx0726.github.io/data/th.csv'; // Update the path as per your hosting
 
-document.addEventListener('DOMContentLoaded', function () {
-    Promise.all([
-        d3.json('https://zfx0726.github.io/data/visualization_data.json'),
-        d3.json('https://zfx0726.github.io/data/gz_2010_us_040_00_5m.json') // Loading GeoJSON file
-    ]).then(function ([data, us]) {
-        // Select the tabs container
-        var tabsContainer = d3.select('#tabs-container');
+// Set up the SVG dimensions
+const width = 900;
+const height = 500;
 
-        if (tabsContainer.empty()) {
-            console.error('Unable to find #tabs-container');
-            return;
-        }
+// Create a color scale
+const colorScale = d3.scaleSequential()
+    .domain([0, 10000]) // Domain will be updated based on the negotiated rates in the CSV data
+    .interpolator(d3.interpolateBlues);
 
-        // Create tabs for each billing code
-        for (var code in data) {
-            tabsContainer.append('div')
-                .attr('class', 'tab')
-                .text(code + ' - ' + data[code].billing_code_name)
-                .on('click', function (d, i) {
-                    // Handle tab click, update visualization
-                    d3.selectAll('.tab').classed('active-tab', false);
-                    d3.select(this).classed('active-tab', true);
-                    updateVisualization(data[d3.select(this).datum()], us);
-                })
-                .datum(code);
-        }
+// Set up the map projection
+const projection = d3.geoAlbersUsa()
+    .translate([width / 2, height / 2])
+    .scale(1000);
 
-        // Initial visualization update
-        updateVisualization(data[Object.keys(data)[0]], us);
-        d3.select('.tab').classed('active-tab', true);
-    });
-});
+const path = d3.geoPath().projection(projection);
 
-function updateVisualization(data, us) {
-    // Select the SVG container
-    var svg = d3.select('#visualization');
+// Create the SVG container for the map
+const svgMap = d3.select('#map')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
 
-    if (svg.empty()) {
-        console.error('Unable to find #visualization');
-        return;
-    }
+// Create a tooltip
+const tooltip = d3.select('body').append('div')
+    .attr('class', 'tooltip')
+    .style('opacity', 0);
 
-    // Clear any existing visualization
-    svg.selectAll('*').remove();
-
-    // Append the tooltip div to the body
-    var tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
-
-    // Define the projection and path
-    var projection = d3.geoAlbersUsa().fitSize([960, 600], us);
-    var path = d3.geoPath().projection(projection);
-
-    // Draw states
-    svg.selectAll('path')
-        .data(us.features)
+// Load and render the map
+d3.json(geojsonUrl).then(stateData => {
+    // Process the GeoJSON data here
+    svgMap.selectAll('path')
+        .data(stateData.features)
         .enter()
         .append('path')
         .attr('d', path)
-        .style('fill', function (d) {
-            return data.prices[stateCodeMapping[d.properties.STATE]] ? 'blue' : 'grey';
-        })
-        .on('mouseover', function (event, d) {
-            var stateCode = stateCodeMapping[d.properties.STATE];
-            var price = data.prices[stateCode] ? data.prices[stateCode].price : 'N/A';
+        .attr('fill', d => colorScale(0)) // Initially, fill with the lowest color in the scale
+        .attr('stroke', 'white')
+        .on('mouseover', d => {
             tooltip.transition()
                 .duration(200)
-                .style("opacity", .9);
-            tooltip.html("State: " + stateCode + "<br/>" + "Price: " + price)
-                .style("left", (event.pageX) + "px")
-                .style("top", (event.pageY - 28) + "px");
+                .style('opacity', .9);
+            tooltip.html(d.properties.NAME)
+                .style('left', (d3.event.pageX) + 'px')
+                .style('top', (d3.event.pageY - 28) + 'px');
         })
-        .on('mouseout', function (d) {
+        .on('mouseout', d => {
             tooltip.transition()
                 .duration(500)
-                .style("opacity", 0);
+                .style('opacity', 0);
         });
-}
+
+    // Load and render the bar chart
+    d3.csv(csvUrl).then(csvData => {
+        // Calculate average negotiated rates per state
+        const stateRates = {};
+        csvData.forEach(d => {
+            const state = d.provider_state;
+            if (!stateRates[state]) stateRates[state] = [];
+            stateRates[state].push(+d.negotiated_rate);
+        });
+
+        // Calculate the average rate and update the color of the map
+        Object.keys(stateRates).forEach(state => {
+            const avgRate = d3.mean(stateRates[state]);
+            svgMap.selectAll('path')
+                .filter(d => d.properties.STUSPS === state)
+                .attr('fill', d => colorScale(avgRate));
+        });
+
+        // Update the domain of the color scale and create the bar chart
+        const maxRate = d3.max(Object.values(stateRates).map(d => d3.mean(d)));
+        colorScale.domain([0, maxRate]);
+
+        // Set up the SVG container for the bar chart
+        const svgBar = d3.select('#bar-chart')
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+        // Create the bar chart visualization based on the stateRates
+        const barData = Object.keys(stateRates).map(state => {
+            return {
+                state: state,
+                avgRate: d3.mean(stateRates[state])
+            };
+        });
+
+        // Create scales for the bar chart
+        const xScale = d3.scaleBand()
+            .domain(barData.map(d => d.state))
+            .range([0, width])
+            .padding(0.1);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, maxRate])
+            .range([height, 0]);
+
+        // Add bars to the bar chart
+        svgBar.selectAll('rect')
+            .data(barData)
+            .enter()
+            .append('rect')
+            .attr('x', d => xScale(d.state))
+            .attr('y', d => yScale(d.avgRate))
+            .attr('width', xScale.bandwidth())
+            .attr('height', d => height - yScale(d.avgRate))
+            .attr('fill', d => colorScale(d.avgRate))
+            .on('mouseover', d => {
+                tooltip.transition()
+                    .duration(200)
+                    .style('opacity', .9);
+                tooltip.html(d.state + '<br>' + 'Avg Rate: ' + d.avgRate.toFixed(2))
+                    .style('left', (d3.event.pageX) + 'px')
+                    .style('top', (d3.event.pageY - 28) + 'px');
+            })
+            .on('mouseout', d => {
+                tooltip.transition()
+                    .duration(500)
+                    .style('opacity', 0);
+            });
+    });
+});
