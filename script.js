@@ -73,10 +73,9 @@ d3.json(geojsonUrl).then(stateData => {
                     .style('opacity', .9);
                 tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
                     .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
-                    .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');  // Position the tooltip above the cursor
-
+                    .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px')  // Position the tooltip above the cursor
                     .attr('stroke', '#ff4500') // Or any color that suits your design
-                    .attr('stroke-width', '2')
+                    .attr('stroke-width', '2');
             })
 
             .on('mouseout', d => {
@@ -133,8 +132,8 @@ d3.json(geojsonUrl).then(stateData => {
                     .style('opacity', .9);
                 tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
                     .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
-                    .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');  // Position the tooltip above the cursor
-                    .attr('fill', '#ff4500') // Or any color that suits your design
+                    .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px')  // Position the tooltip above the cursor
+                    .attr('fill', '#ff4500'); // Or any color that suits your design
 
             })
 
