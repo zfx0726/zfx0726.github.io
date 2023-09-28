@@ -74,12 +74,17 @@ d3.json(geojsonUrl).then(stateData => {
                 tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
                     .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
                     .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');  // Position the tooltip above the cursor
+
+                    .attr('stroke', '#ff4500') // Or any color that suits your design
+                    .attr('stroke-width', '2')
             })
 
             .on('mouseout', d => {
                 tooltip.transition()
                     .duration(500)
                     .style('opacity', 0);
+                    .attr('stroke', 'white')
+                    .attr('stroke-width', '1')
             });
 
         svgMap.append('text')
@@ -129,12 +134,16 @@ d3.json(geojsonUrl).then(stateData => {
                 tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
                     .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
                     .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');  // Position the tooltip above the cursor
+                    .attr('fill', '#ff4500') // Or any color that suits your design
+
             })
 
             .on('mouseout', d => {
                 tooltip.transition()
                     .duration(500)
                     .style('opacity', 0);
+                    .attr('fill', d => colorScale(d.avgRate))
+
             });
 
         svgBar.append('text')
