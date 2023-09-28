@@ -65,15 +65,15 @@ d3.json(geojsonUrl).then(stateData => {
                     return colorScale(avgRateValue);
             })
             .attr('stroke', 'white')
-            ..on('mouseover', (event, d) => { // Receive event as the first argument
-    const stateName = d.properties ? d.properties.NAME : 'Unknown State'; // Handle undefined properties object
-    tooltip.transition()
-        .duration(200)
-        .style('opacity', .9);
-    tooltip.html(stateName)
-        .style('left', (event.pageX) + 'px') // Correctly access pageX from event object
-        .style('top', (event.pageY - 28) + 'px'); // Correctly access pageY from event object
-})
+            .on('mouseover', (event, d) => { // Receive event as the first argument
+                const stateName = d.properties ? d.properties.NAME : 'Unknown State'; // Handle undefined properties object
+                tooltip.transition()
+                    .duration(200)
+                    .style('opacity', .9);
+                tooltip.html(stateName)
+                    .style('left', (event.pageX) + 'px') // Correctly access pageX from event object
+                    .style('top', (event.pageY - 28) + 'px'); // Correctly access pageY from event object
+            })
 
             .on('mouseout', d => {
                 tooltip.transition()
