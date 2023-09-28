@@ -110,8 +110,6 @@ d3.json(geojsonUrl).then(stateData => {
             .style('text-anchor', 'middle')
             .text('Average Negotiated Rate ($)');
 
-            .text('Average Negotiated Rates by State');
-
         const svgBar = d3.select('#bar-chart')
             .append('svg')
             .attr('width', width)
