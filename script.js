@@ -142,3 +142,53 @@ d3.json(geojsonUrl).then(stateData => {
             .text('Average Negotiated Rates by State');
     });
 });
+
+// ... [existing content above]
+
+// Update tooltip to display meaningful information
+.on('mouseover', function(event, d) {
+    const stateName = d.properties.NAME || 'Unknown State'; // Handle undefined state name
+    const stateNumber = d.properties.STATE;
+    const state = stateNumberMapping[stateNumber] || 'Unknown State'; // Correctly access the state abbreviation from GeoJSON data
+    const avgRate = stateRates[state] || [];
+    const avgRateValue = avgRate.length > 0 ? d3.mean(avgRate).toFixed(2) : 'Unknown Rate';
+    tooltip.html(`${stateName} (${state}): $${avgRateValue}`)
+        .style('left', (event.pageX) + 'px')
+        .style('top', (event.pageY - 28) + 'px');
+    tooltip.transition()
+        .duration(200)
+        .style('opacity', .9);
+})
+.on('mouseout', function(d) {
+    tooltip.transition()
+        .duration(500)
+        .style('opacity', 0);
+});
+
+// ... [existing content for drawing bar chart]
+
+// Add labels and axes to the bar chart
+const xAxis = d3.axisBottom(xScale).ticks(10);
+const yAxis = d3.axisLeft(yScale).ticks(10);
+
+svgBarChart.append('g')
+    .attr('transform', `translate(0,${height - padding})`)
+    .call(xAxis);
+
+svgBarChart.append('g')
+    .attr('transform', `translate(${padding},0)`)
+    .call(yAxis);
+
+svgBarChart.append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('y', 0)
+    .attr('x',0 - (height / 2))
+    .attr('dy', '1em')
+    .style('text-anchor', 'middle')
+    .text('Average Negotiated Rate ($)'); // Y-axis Label
+
+svgBarChart.append('text')
+    .attr('transform', `translate(${width/2},${height})`)
+    .attr('dy', '-1em')
+    .style('text-anchor', 'middle')
+    .text('States'); // X-axis Label
