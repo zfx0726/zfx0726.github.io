@@ -3,6 +3,7 @@
 const geojsonUrl = 'https://zfx0726.github.io/data/gz_2010_us_040_00_5m.json'; // Update the path as per your hosting
 const csvUrl = 'https://zfx0726.github.io/data/th.csv'; // Update the path as per your hosting
 
+
 // Set up the SVG dimensions
 const width = 900;
 const height = 500;
@@ -33,7 +34,6 @@ const tooltip = d3.select('body').append('div')
 d3.json(geojsonUrl).then(stateData => {
     // Load and render the bar chart
     d3.csv(csvUrl).then(csvData => {
-        // Calculate average negotiated rates per state
         const stateRates = {};
         csvData.forEach(d => {
             const state = d.provider_state;
@@ -41,31 +41,30 @@ d3.json(geojsonUrl).then(stateData => {
             stateRates[state].push(+d.negotiated_rate);
         });
 
-        // Calculate the minimum and maximum average rate
         const avgRates = Object.values(stateRates).map(rates => d3.mean(rates));
         const minRate = d3.min(avgRates);
         const maxRate = d3.max(avgRates);
 
-        // Update the domain of the color scale
         colorScale.domain([minRate, maxRate]);
 
-        // Update the color of the map based on average negotiated rates
+        // Correctly match states and handle undefined values
         svgMap.selectAll('path')
             .data(stateData.features)
             .enter()
             .append('path')
             .attr('d', path)
             .attr('fill', d => {
-                const state = d.properties.STUSPS;
+                const state = d.properties.STUSPS; // Correctly access the state abbreviation from GeoJSON data
                 const avgRate = stateRates[state] ? d3.mean(stateRates[state]) : minRate;
                 return colorScale(avgRate);
             })
             .attr('stroke', 'white')
             .on('mouseover', d => {
+                const stateName = d.properties.NAME || 'Unknown State'; // Handle undefined state name
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(d.properties.NAME)
+                tooltip.html(stateName)
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
@@ -75,7 +74,6 @@ d3.json(geojsonUrl).then(stateData => {
                     .style('opacity', 0);
             });
 
-        // Add a title to the map visualization
         svgMap.append('text')
             .attr('x', width / 2)
             .attr('y', 20)
@@ -84,21 +82,18 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('font-weight', 'bold')
             .text('Average Negotiated Rates by State');
 
-        // Set up the SVG container for the bar chart
         const svgBar = d3.select('#bar-chart')
             .append('svg')
             .attr('width', width)
             .attr('height', height);
 
-        // Create the bar chart visualization based on the stateRates
         const barData = Object.keys(stateRates).map(state => {
             return {
                 state: state,
-                avgRate: d3.mean(stateRates[state])
+                avgRate: d3.mean(stateRates[state]) || 0 // Handle undefined average rate
             };
         });
 
-        // Create scales for the bar chart
         const xScale = d3.scaleBand()
             .domain(barData.map(d => d.state))
             .range([0, width])
@@ -108,7 +103,6 @@ d3.json(geojsonUrl).then(stateData => {
             .domain([0, maxRate])
             .range([height, 0]);
 
-        // Add bars to the bar chart
         svgBar.selectAll('rect')
             .data(barData)
             .enter()
@@ -119,10 +113,11 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('height', d => height - yScale(d.avgRate))
             .attr('fill', d => colorScale(d.avgRate))
             .on('mouseover', d => {
+                const avgRateStr = d.avgRate ? d.avgRate.toFixed(2) : 'Unknown Rate'; // Handle undefined average rate
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(d.state + '<br>' + d.avgRate.toFixed(2))
+                tooltip.html(d.state + '<br>' + avgRateStr)
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
@@ -132,7 +127,6 @@ d3.json(geojsonUrl).then(stateData => {
                     .style('opacity', 0);
             });
 
-        // Add title to the bar chart
         svgBar.append('text')
             .attr('x', width / 2)
             .attr('y', 20)
