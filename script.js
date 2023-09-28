@@ -81,9 +81,9 @@ d3.json(geojsonUrl).then(stateData => {
             .on('mouseout', d => {
                 tooltip.transition()
                     .duration(500)
-                    .style('opacity', 0);
+                    .style('opacity', 0)
                     .attr('stroke', 'white')
-                    .attr('stroke-width', '1')
+                    .attr('stroke-width', '1');
             });
 
         svgMap.append('text')
@@ -140,8 +140,8 @@ d3.json(geojsonUrl).then(stateData => {
             .on('mouseout', d => {
                 tooltip.transition()
                     .duration(500)
-                    .style('opacity', 0);
-                    .attr('fill', d => colorScale(d.avgRate))
+                    .style('opacity', 0)
+                    .attr('fill', d => colorScale(d.avgRate));
 
             });
 
