@@ -66,17 +66,22 @@ d3.json(geojsonUrl).then(stateData => {
             })
             .attr('stroke', 'white')
             .on('mouseover', (event, d) => { // Receive event as the first argument
-                const state = d.state || 'Unknown State'; // Access state abbreviation directly from d.state
-                const avgRateStr = d.avgRate ? `$${d.avgRate.toFixed(0).toLocaleString()}` : 'Unknown Rate';
+                                const stateNumber = d.properties.STATE; // Correctly access the state number from GeoJSON data
+                                const state = stateNumberMapping[stateNumber] || 'Unknown State'; // Correctly access the state abbreviation
+                                const avgRate = stateRates[state] || [];
+                                const avgRateValue = avgRate.length > 0 ? d3.mean(avgRate) : 'Unknown Rate';
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
-                    .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
-                    .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px')  // Position the tooltip above the cursor
+                tooltip.html(state + '<br>' + (avgRateValue !== 'Unknown Rate' ? '$' + avgRateValue.toFixed(2) : avgRateValue))
+                            .style('left', (event.pageX) + 'px')
+                            .style('top', (event.pageY - 28) + 'px')
                     .attr('stroke', '#ff4500') // Or any color that suits your design
                     .attr('stroke-width', '2');
             })
+
+
+                    
 
             .on('mouseout', d => {
                 tooltip.transition()
