@@ -71,8 +71,8 @@ d3.json(geojsonUrl).then(stateData => {
                     .duration(200)
                     .style('opacity', .9);
                 tooltip.html(stateName)
-                    .style('left', (event.pageX) + 'px') // Correctly access pageX from event object
-                    .style('top', (event.pageY - 28) + 'px'); // Correctly access pageY from event object
+                    .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
+                    .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');  // Position the tooltip above the cursor
             })
 
             .on('mouseout', d => {
@@ -126,8 +126,8 @@ d3.json(geojsonUrl).then(stateData => {
                     .duration(200)
                     .style('opacity', .9);
                 tooltip.html(state + '<br>' + avgRateStr) // Updated tooltip content
-                    .style('left', (event.pageX) + 'px') // Correctly access pageX from event object
-                    .style('top', (event.pageY - 28) + 'px'); // Correctly access pageY from event object
+                    .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')  // Center the tooltip horizontally relative to the cursor
+                    .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px');  // Position the tooltip above the cursor
             })
 
             .on('mouseout', d => {
