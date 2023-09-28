@@ -24,75 +24,30 @@ const svgMap = d3.select('#map')
     .attr('width', width)
     .attr('height', height);
 
-// Create the SVG container for the bar chart
-const svgBar = d3.select('#bar-chart')
-    .append('svg')
-    .attr('width', width)
-    .attr('height', height);
-
 // Create a tooltip
 const tooltip = d3.select('body').append('div')
     .attr('class', 'tooltip')
     .style('opacity', 0);
 
-// Function to render the bar chart
-const renderBarChart = (data, field = 'negotiation_arrangement') => {
-    svgBar.selectAll("*").remove();  // Clear previous bar chart
-
-    const groupedData = d3.nest()
-        .key(d => d[field])
-        .rollup(leaves => d3.mean(leaves, d => d.negotiated_rate))
-        .entries(data);
-
-    const xScale = d3.scaleBand()
-        .domain(groupedData.map(d => d.key))
-        .range([0, width])
-        .padding(0.1);
-
-    const maxRate = d3.max(groupedData, d => d.value);
-    const yScale = d3.scaleLinear()
-        .domain([0, maxRate])
-        .range([height, 0]);
-
-    svgBar.selectAll('rect')
-        .data(groupedData)
-        .enter()
-        .append('rect')
-        .attr('x', d => xScale(d.key))
-        .attr('y', d => yScale(d.value))
-        .attr('width', xScale.bandwidth())
-        .attr('height', d => height - yScale(d.value))
-        .attr('fill', d => colorScale(d.value))
-        .on('mouseover', d => {
-            tooltip.transition()
-                .duration(200)
-                .style('opacity', .9);
-            tooltip.html(d.key + '<br>' + d.value.toFixed(2))
-                .style('left', (d3.event.pageX) + 'px')
-                .style('top', (d3.event.pageY - 28) + 'px');
-        })
-        .on('mouseout', d => {
-            tooltip.transition()
-                .duration(500)
-                .style('opacity', 0);
-        });
-
-    // Add title to the bar chart
-    svgBar.append('text')
-        .attr('x', width / 2)
-        .attr('y', 20)
-        .attr('text-anchor', 'middle')
-        .attr('font-size', '20px')
-        .attr('font-weight', 'bold')
-        .text('Average Rates by ' + field.charAt(0).toUpperCase() + field.slice(1));
-}
-
 // Load and render the map
 d3.json(geojsonUrl).then(stateData => {
     // Load and render the bar chart
     d3.csv(csvUrl).then(csvData => {
-        // Render the default bar chart with a breakdown by negotiation arrangement
-        renderBarChart(csvData);
+        // Calculate average negotiated rates per state
+        const stateRates = {};
+        csvData.forEach(d => {
+            const state = d.provider_state;
+            if (!stateRates[state]) stateRates[state] = [];
+            stateRates[state].push(+d.negotiated_rate);
+        });
+
+        // Calculate the minimum and maximum average rate
+        const avgRates = Object.values(stateRates).map(rates => d3.mean(rates));
+        const minRate = d3.min(avgRates);
+        const maxRate = d3.max(avgRates);
+
+        // Update the domain of the color scale
+        colorScale.domain([minRate, maxRate]);
 
         // Update the color of the map based on average negotiated rates
         svgMap.selectAll('path')
@@ -102,22 +57,83 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('d', path)
             .attr('fill', d => {
                 const state = d.properties.STUSPS;
-                const stateData = csvData.filter(d => d.provider_state === state);
-                const avgRate = stateData.length ? d3.mean(stateData, d => d.negotiated_rate) : 0;
+                const avgRate = stateRates[state] ? d3.mean(stateRates[state]) : minRate;
                 return colorScale(avgRate);
             })
             .attr('stroke', 'white')
             .on('mouseover', d => {
-                const state = d.properties.STUSPS;
-                const stateData = csvData.filter(d => d.provider_state === state);
-                renderBarChart(stateData); // Update the bar chart for the hovered state
+                tooltip.transition()
+                    .duration(200)
+                    .style('opacity', .9);
+                tooltip.html(d.properties.NAME)
+                    .style('left', (d3.event.pageX) + 'px')
+                    .style('top', (d3.event.pageY - 28) + 'px');
             })
             .on('mouseout', d => {
-                renderBarChart(csvData); // Render the default bar chart again
+                tooltip.transition()
+                    .duration(500)
+                    .style('opacity', 0);
             });
 
         // Add a title to the map visualization
         svgMap.append('text')
+            .attr('x', width / 2)
+            .attr('y', 20)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '20px')
+            .attr('font-weight', 'bold')
+            .text('Average Negotiated Rates by State');
+
+        // Set up the SVG container for the bar chart
+        const svgBar = d3.select('#bar-chart')
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+        // Create the bar chart visualization based on the stateRates
+        const barData = Object.keys(stateRates).map(state => {
+            return {
+                state: state,
+                avgRate: d3.mean(stateRates[state])
+            };
+        });
+
+        // Create scales for the bar chart
+        const xScale = d3.scaleBand()
+            .domain(barData.map(d => d.state))
+            .range([0, width])
+            .padding(0.1);
+
+        const yScale = d3.scaleLinear()
+            .domain([0, maxRate])
+            .range([height, 0]);
+
+        // Add bars to the bar chart
+        svgBar.selectAll('rect')
+            .data(barData)
+            .enter()
+            .append('rect')
+            .attr('x', d => xScale(d.state))
+            .attr('y', d => yScale(d.avgRate))
+            .attr('width', xScale.bandwidth())
+            .attr('height', d => height - yScale(d.avgRate))
+            .attr('fill', d => colorScale(d.avgRate))
+            .on('mouseover', d => {
+                tooltip.transition()
+                    .duration(200)
+                    .style('opacity', .9);
+                tooltip.html(d.state + '<br>' + d.avgRate.toFixed(2))
+                    .style('left', (d3.event.pageX) + 'px')
+                    .style('top', (d3.event.pageY - 28) + 'px');
+            })
+            .on('mouseout', d => {
+                tooltip.transition()
+                    .duration(500)
+                    .style('opacity', 0);
+            });
+
+        // Add title to the bar chart
+        svgBar.append('text')
             .attr('x', width / 2)
             .attr('y', 20)
             .attr('text-anchor', 'middle')
