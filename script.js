@@ -65,7 +65,7 @@ d3.json(geojsonUrl).then(stateData => {
                     return colorScale(avgRateValue);
             })
             .attr('stroke', 'white')
-            .on('mouseover', function(d) {
+            .on('mouseover', d => {
                 const stateName = d.properties.NAME || 'Unknown State'; // Handle undefined state name
                 tooltip.transition()
                     .duration(200)
@@ -74,7 +74,7 @@ d3.json(geojsonUrl).then(stateData => {
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
-            .on('mouseout', function(d) {
+            .on('mouseout', d => {
                 tooltip.transition()
                     .duration(500)
                     .style('opacity', 0);
@@ -86,29 +86,7 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('text-anchor', 'middle')
             .attr('font-size', '20px')
             .attr('font-weight', 'bold')
-        // Add X Axis
-        svgBar.append('g')
-            .attr('transform', 'translate(0,' + height + ')')
-            .call(d3.axisBottom(xScale));
-        
-        // X Axis Label
-        svgBar.append('text')
-            .attr('transform', 'translate(' + (width / 2) + ' ,' + (height + margin.top + 20) + ')')
-            .style('text-anchor', 'middle')
-            .text('State');
-
-        // Add Y Axis
-        svgBar.append('g')
-            .call(d3.axisLeft(yScale));
-            
-        // Y Axis Label
-        svgBar.append('text')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', 0 - margin.left)
-            .attr('x', 0 - (height / 2))
-            .attr('dy', '1em')
-            .style('text-anchor', 'middle')
-            .text('Average Negotiated Rate ($)');
+            .text('Average Negotiated Rates by State');
 
         const svgBar = d3.select('#bar-chart')
             .append('svg')
@@ -140,16 +118,16 @@ d3.json(geojsonUrl).then(stateData => {
             .attr('width', xScale.bandwidth())
             .attr('height', d => height - yScale(d.avgRate))
             .attr('fill', d => colorScale(d.avgRate))
-            .on('mouseover', function(d) {
+            .on('mouseover', d => {
                 const avgRateStr = d.avgRate ? d.avgRate.toFixed(2) : 'Unknown Rate'; // Handle undefined average rate
                 tooltip.transition()
                     .duration(200)
                     .style('opacity', .9);
-                    tooltip.html(d.state + ' (' + stateNumberMapping[d.state] + ')' + '<br>' + avgRateStr)
+                    tooltip.html(stateNumberMapping[d.state] + ' (' + d.state + ')' + '<br>' + avgRateStr)
                     .style('left', (d3.event.pageX) + 'px')
                     .style('top', (d3.event.pageY - 28) + 'px');
             })
-            .on('mouseout', function(d) {
+            .on('mouseout', d => {
                 tooltip.transition()
                     .duration(500)
                     .style('opacity', 0);
