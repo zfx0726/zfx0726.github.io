@@ -1,5 +1,6 @@
+
 // Define the state code mapping
-    const stateCodeMapping = {
+const stateCodeMapping = {
     '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO', 
     '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL', '13': 'GA', '15': 'HI', 
     '16': 'ID', '17': 'IL', '18': 'IN', '19': 'IA', '20': 'KS', '21': 'KY', 
@@ -15,21 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     Promise.all([
         d3.json('https://zfx0726.github.io/data/visualization_data.json'),
         d3.json('https://zfx0726.github.io/data/gz_2010_us_040_00_5m.json') // Loading GeoJSON file
-    ]).then(function ([data]) {
-
-      // Extract data
-          let us = data[0];
-          let visualization_data = data[1];
-          
-          // Create a map to hold state prices
-          let statePrices = new Map();
-          visualization_data.forEach(d => {
-              // Assuming that state_data contains the state code and price
-              Object.entries(d.state_data).forEach(([state, price]) => {
-                  statePrices.set(state, price);
-              });
-          });
-
+    ]).then(function ([data, us]) {
         // Select the tabs container
         var tabsContainer = d3.select('#tabs-container');
 
@@ -59,170 +46,46 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function updateVisualization(data, us) {
-    // Update the visualization based on the selected billing code data
-    var visualizationContainer = d3.select('#visualization-container');
-    visualizationContainer.selectAll('*').remove(); // Clear previous visualization
+    // Select the SVG container
+    var svg = d3.select('#visualization');
 
-    // Append the billing_code_name as a title
-    visualizationContainer.append('h2').text(data.billing_code_name);
-
-    // Create map visualization for provider_state
-    createMapVisualization(visualizationContainer, data.state_data, 'Average Negotiated Rate by State', us);
-
-    // Create bar chart for billing_class
-    createBarChart(visualizationContainer, data.class_data, 'Average Negotiated Rate by Billing Class');
-
-    // Create bar chart for negotiation_arrangement
-    createBarChart(visualizationContainer, data.arrangement_data, 'Average Negotiated Rate by Negotiation Arrangement');
-}
-
-function createMapVisualization(container, data, title, us) {
-    // Define width and height
-    var width = 960,
-        height = 600;
-
-    // Create SVG container
-    var svg = container.append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .append('g');
-
-    // Define map projection
-    var projection = d3.geoAlbersUsa()
-        .translate([width / 2, height / 2]);
-
-    var path = d3.geoPath().projection(projection);
-
-    // Create a tooltip
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-
-  // Determine the maximum value in your data to adjust the color scale dynamically
-    var maxValue = d3.max(Object.values(data));
-
-    // Create a logarithmic color scale based on the maximum value
-    var colorScale = d3.scaleSequential(d3.interpolateBlues).domain([0, Math.log(maxValue + 1)]);
-
-
-
-    svg.selectAll("path")
-            .data(us.features)
-            .enter()
-            .append("path")
-            .attr("d", path)
-            .style("stroke", "#fff")
-            .style("stroke-width", "1")
-            .style("fill", function (d) {
-                var stateAlphaCode = stateCodeMapping[d.properties.STATE];
-                var value = data[stateAlphaCode];
-                
-                // Use the logarithmic color scale to determine the fill color
-                return value ? colorScale(Math.log(value + 1)) : "#ccc";
-            })
-
-
-        .on('mouseover', function(event, d) {
-                // Assuming that state code is available in the properties.STATE field of GeoJSON data
-                let stateCode = d.properties.STATE;
-                let price = statePrices.get(stateCode) || 'N/A'; // Get the price from the map
-                tooltip.transition()
-                       .duration(200)
-                       .style('opacity', .9);
-                tooltip.html('State: ' + d.properties.NAME + '<br>Price: ' + price)
-                       .style('left', (event.pageX) + 'px')
-                       .style('top', (event.pageY - 28) + 'px');
-            })
-
-        .on("mouseout", function (d) {
-            // Hide tooltip on mouseout
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
-        });
-
-
-    // Append title to the map
-        svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", 30)
-            .attr("text-anchor", "middle")
-            .style("font-size", "20px")
-            .text(title);
+    if (svg.empty()) {
+        console.error('Unable to find #visualization');
+        return;
     }
 
+    // Clear any existing visualization
+    svg.selectAll('*').remove();
 
+    // Append the tooltip div to the body
+    var tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
 
-function createBarChart(container, data, title) {
-    // Set the dimensions and margins of the graph
-    var margin = { top: 30, right: 30, bottom: 70, left: 60 },
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    // Define the projection and path
+    var projection = d3.geoAlbersUsa().fitSize([960, 600], us);
+    var path = d3.geoPath().projection(projection);
 
-    // Append SVG and group element
-    var svg = container.append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // X axis
-    var x = d3.scaleBand()
-        .range([0, width])
-        .domain(Object.keys(data))
-        .padding(0.2);
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
-        .selectAll("text")
-        .attr("transform", "translate(-10,0)rotate(-45)")
-        .style("text-anchor", "end");
-
-    // Add Y axis
-    var y = d3.scaleLinear()
-        .domain([0, d3.max(Object.values(data))])
-        .range([height, 0]);
-    svg.append("g").call(d3.axisLeft(y));
-
-    // Bars
-    svg.selectAll("mybar")
-        .data(Object.entries(data))
+    // Draw states
+    svg.selectAll('path')
+        .data(us.features)
         .enter()
-        .append("rect")
-        .attr("x", function (d) { return x(d[0]); })
-        .attr("y", function (d) { return y(d[1]); })
-        .attr("width", x.bandwidth())
-        .attr("height", function (d) { return height - y(d[1]); })
-        .attr("fill", "#69b3a2")
-        .on("mouseover", function (event, d) {
-            d3.select(this).attr("fill", "#405d55");
-            // Show tooltip
-            div.transition()
+        .append('path')
+        .attr('d', path)
+        .style('fill', function (d) {
+            return data.prices[stateCodeMapping[d.properties.STATE]] ? 'blue' : 'grey';
+        })
+        .on('mouseover', function (event, d) {
+            var stateCode = stateCodeMapping[d.properties.STATE];
+            var price = data.prices[stateCode] ? data.prices[stateCode].price : 'N/A';
+            tooltip.transition()
                 .duration(200)
-                .style("opacity", 0.9);
-            div.html(d[0] + "<br>" + d[1])
+                .style("opacity", .9);
+            tooltip.html("State: " + stateCode + "<br/>" + "Price: " + price)
                 .style("left", (event.pageX) + "px")
                 .style("top", (event.pageY - 28) + "px");
         })
-        .on("mouseout", function (d) {
-            d3.select(this).attr("fill", "#69b3a2");
-            // Hide tooltip
-            div.transition()
+        .on('mouseout', function (d) {
+            tooltip.transition()
                 .duration(500)
                 .style("opacity", 0);
         });
-
-    // Title
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("text-decoration", "underline")
-        .text(title);
-
-    // Tooltip
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
 }
