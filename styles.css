@@ -44,10 +44,11 @@ select {
 .visualization-section {
     width: 90%;
     margin: auto;
-    margin-top: 2em; /* Adjusted top margin for spacing */
-    padding-top: 1em; /* Add padding to center the content */
-    text-align: center; /* Center the content */
+    margin-top: 0.5em; 
+    padding-top: 1em;
+    text-align: center;
 }
+
 
 /* Media Query for responsiveness */
 @media (max-width: 600px) {
