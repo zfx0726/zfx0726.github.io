@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <title>Data Visualization</title>
 </head>
@@ -12,14 +13,16 @@
         <h1>Healthcare Costs Vary Dramatically by State</h1>
     </header>
     <section class="filter-section">
-        <label for="billing-code-filter">Filter by Billing Code: </label>
-        <select id="billing-code-filter">
-            <option value="47562">Laparoscopy Surgical Cholecystectomy</option>
-            <option value="15777">Implant Biological Implant for Soft Tissue Reinforcement</option>
-            <option value="33249">Insertion/Replacement of Permanent Defibrillator with Transvenous Leads, Dual Chamber</option>
-            <option value="77373">Stereotactic Body Radiation Delivery</option>
-            <option value="36522">Photopheresis Extracorporeal</option>
-        </select>
+        <div class="container">
+            <label for="billing-code-filter">Filter by Billing Code: </label>
+            <select id="billing-code-filter">
+                <option value="47562">Laparoscopy Surgical Cholecystectomy</option>
+                <option value="15777">Implant Biological Implant for Soft Tissue Reinforcement</option>
+                <option value="33249">Insertion/Replacement of Permanent Defibrillator with Transvenous Leads, Dual Chamber</option>
+                <option value="77373">Stereotactic Body Radiation Delivery</option>
+                <option value="36522">Photopheresis Extracorporeal</option>
+            </select>
+        </div>
     </section>
     <section class="visualization-section" id="visualization-section">
         <!-- The map and the bar chart will be appended here by D3.js -->
