@@ -42,22 +42,6 @@ function renderVisualizations(stateData, csvData) {
         stateRates[state].push(+d.negotiated_rate);
     });
 
-
-        // Create containers for map and bars within visualization-section
-    const mapContainer = d3.select('#visualization-section').append('div').attr('class', 'map-container');
-    const barContainer = d3.select('#visualization-section').append('div').attr('class', 'bar-container');
-
-    // Adjusting the SVG container for the map to append to mapContainer
-    const svgMap = mapContainer.append('svg').attr('width', width).attr('height', height);
-
-    // Normalized color scale for the map
-    const color = d3.scaleQuantize([1, d3.max(Object.values(stateRates))], d3.schemeBlues[9]);
-
-        // Sorting the bars in descending order
-    const sortedStates = Object.keys(stateRates).sort((a, b) => d3.descending(stateRates[a], stateRates[b]));
-
-
-
     const avgRates = Object.values(stateRates).map(rates => d3.mean(rates));
     const minRate = d3.min(avgRates);
     const maxRate = d3.max(avgRates);
@@ -96,7 +80,7 @@ function renderVisualizations(stateData, csvData) {
         });
 
 
-
+        
 
         // Bar Chart Rendering
             const svgBar = d3.select('#visualization-section').append('svg').attr('width', width).attr('height', height);

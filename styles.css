@@ -1,7 +1,4 @@
-
-/* Updated CSS content */
-
-/* Existing styles */
+/* Reset some default styles in browsers */
 body, h1, h2, h3, p, ul {
     margin: 0;
     padding: 0;
@@ -11,7 +8,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     background-color: #f4f4f4;
-    padding-top: 20px;
+    padding-top: 20px; /* Adjusted space for the fixed header */
 }
 
 header {
@@ -32,7 +29,7 @@ header h1 {
 .filter-section {
     margin: 2em 0 3em 0;
     text-align: center;
-    padding-top: 80px;
+    padding-top: 80px; /* Adjusted space for the fixed header */
 }
 
 label {
@@ -48,30 +45,6 @@ select {
 .visualization-section {
     width: 90%;
     margin: auto;
-    display: flex; /* Updated to display map and bars side by side */
-    align-items: flex-start;
-}
-
-.map-container, .bar-container {
-    flex: 1;
-}
-
-.state-name {
-    text-anchor: middle; /* Align the state names in the center below the bars */
-    font-size: 0.8em;
-}
-
-/* Updated tooltip style */
-.tooltip {
-    position: absolute;
-    text-align: center;
-    padding: 8px;
-    font: 12px sans-serif;
-    background: #f9f9f9;
-    border: solid 1px #cfcfcf;
-    border-radius: 4px;
-    pointer-events: none;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 }
 
 /* Media Query for responsiveness */
@@ -87,8 +60,16 @@ select {
     select {
         width: 100%;
     }
+}
 
-    .visualization-section {
-        flex-direction: column; /* Updated to stack map and bars on small screens */
-    }
+.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 8px;
+    font: 12px sans-serif;
+    background: #f9f9f9;
+    border: solid 1px #cfcfcf;
+    border-radius: 4px;
+    pointer-events: none;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
 }
