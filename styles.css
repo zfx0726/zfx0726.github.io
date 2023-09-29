@@ -27,9 +27,8 @@ header h1 {
 }
 
 .filter-section {
-    margin: 2em 0 3em 0;
+    margin: 2em 0; /* Removed the bottom margin to separate from the visualization section */
     text-align: center;
-    padding-top: 80px; /* Adjusted space for the fixed header */
 }
 
 label {
@@ -45,6 +44,9 @@ select {
 .visualization-section {
     width: 90%;
     margin: auto;
+    margin-top: 3em; /* Add some top margin to separate from the filter section */
+    padding-top: 1em; /* Add padding to center the content */
+    text-align: center; /* Center the content */
 }
 
 /* Media Query for responsiveness */
