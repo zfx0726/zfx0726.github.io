@@ -27,7 +27,7 @@ header h1 {
 }
 
 .filter-section {
-    margin: 0; /* Adjusted top margin to create space below the fixed header */
+    margin: 80px 0; /* Adjusted top margin to create space below the fixed header */
     text-align: center;
 }
 
@@ -75,4 +75,34 @@ select {
     border-radius: 4px;
     pointer-events: none;
     box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Using Flexbox for centering and layout management */
+.filter-section, .visualization-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Modern and appealing color scheme */
+body {
+    background-color: #f0f4f7;
+    color: #333;
+}
+
+header {
+    background: #2C3E50; /* Darker color for the header */
+}
+
+/* Adding transitions for smoother user experience */
+a, select {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Additional media query for larger screens */
+@media(min-width: 900px) {
+    .filter-section, .visualization-section {
+        flex-direction: row;
+    }
 }
