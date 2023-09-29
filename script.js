@@ -139,7 +139,7 @@ function renderVisualizations(stateData, csvData) {
                     .append('text')
                     .text(d => d.state) // Display the state abbreviation
                     .attr('x', d => xScale(d.state) + xScale.bandwidth() / 2) // Centered under the bar
-                    .attr('y', d => yScale(d.avgRate) + 30) // Position just below the bottom of the bar
+                    .attr('y', d => yScale(d.avgRate) + 100) 
                     .attr('text-anchor', 'middle') // Center the text horizontally
                     .attr('font-size', '12px')
                     .attr('fill', 'black'); // Adjust text color as needed
