@@ -106,38 +106,7 @@ function renderVisualizations(stateData, csvData) {
             const yScale = d3.scaleLinear().domain([0, maxRate]).range([height, 0]);
 
 
-            // Create x-axis
-    const xAxis = d3.axisBottom(xScale);
-    svgBar.append('g')
-        .attr('class', 'x-axis')
-        .attr('transform', `translate(0, ${height})`)
-        .call(xAxis)
-        .selectAll('text')
-        .style('text-anchor', 'middle');
-
-    // Label x-axis
-    svgBar.append('text')
-        .attr('class', 'x-label')
-        .attr('x', width / 2)
-        .attr('y', height + 40) // Adjust the distance of the label from the x-axis
-        .style('text-anchor', 'middle')
-        .text('State'); // Add your label here
-
-    // Create y-axis
-    const yAxis = d3.axisLeft(yScale);
-    svgBar.append('g')
-        .attr('class', 'y-axis')
-        .call(yAxis);
-
-    // Label y-axis
-    svgBar.append('text')
-        .attr('class', 'y-label')
-        .attr('transform', 'rotate(-90)')
-        .attr('x', -height / 2)
-        .attr('y', -40) // Adjust the distance of the label from the y-axis
-        .style('text-anchor', 'middle')
-        .text('Price'); // Add your label here
-
+            
 
             svgBar.selectAll('rect').remove();
             svgBar.selectAll('rect')
@@ -161,6 +130,37 @@ function renderVisualizations(stateData, csvData) {
                 .on('mouseout', d => {
                     tooltip.transition().duration(500).style('opacity', 0).attr('fill', d => colorScale(d.avgRate));
                 });
+
+
+                // Add text labels for state abbreviations under each bar
+svgBar.selectAll('text')
+    .data(barData)
+    .enter()
+    .append('text')
+    .text(d => d.state) // Display the state abbreviation
+    .attr('x', d => xScale(d.state) + xScale.bandwidth() / 2) // Centered under the bar
+    .attr('y', d => yScale(d.avgRate) + 20) // Adjust the vertical position as needed
+    .attr('text-anchor', 'middle') // Center the text horizontally
+    .attr('font-size', '12px')
+    .attr('fill', 'black'); // Adjust text color as needed
+
+
+    // Create y-axis
+    const yAxis = d3.axisLeft(yScale);
+    svgBar.append('g')
+        .attr('class', 'y-axis')
+        .call(yAxis);
+
+    // Label y-axis
+    svgBar.append('text')
+        .attr('class', 'y-label')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -height / 2)
+        .attr('y', -40) // Adjust the distance of the label from the y-axis
+        .style('text-anchor', 'middle')
+        .text('Price'); // Add your label here
+
+
 
 }
 
