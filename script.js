@@ -80,24 +80,7 @@ function renderVisualizations(stateData, csvData) {
         });
 
 
-        // Sort the bars in descending order
-    csvData.sort((a, b) => d3.descending(+a.rate, +b.rate));
-    
-    // Adjust the domain of the color scale for normalized gradient
-    const colorDomain = d3.extent(csvData, d => +d.rate);
-    colorScale.domain(colorDomain);
-    
-    // Append state names below the bars
-    // This will be done where the bars are being appended, append a text element below each bar with the state name.
-    barContainer.selectAll('.state-name')
-        .data(csvData)
-        .enter()
-        .append('text')
-        .attr('class', 'state-name')
-        .attr('x', d => xScale(stateNumberMapping[d.state]))
-        .attr('y', height + 15) // Positioned below the bar
-        .text(d => stateNumberMapping[d.state]);
-
+        
 
         // Bar Chart Rendering
             const svgBar = d3.select('#visualization-section').append('svg').attr('width', width).attr('height', height);
