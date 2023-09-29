@@ -61,3 +61,15 @@ select {
         width: 100%;
     }
 }
+
+.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 8px;
+    font: 12px sans-serif;
+    background: #f9f9f9;
+    border: solid 1px #cfcfcf;
+    border-radius: 4px;
+    pointer-events: none;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+}
