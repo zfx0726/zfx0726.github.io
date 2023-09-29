@@ -97,3 +97,12 @@ select:hover {
         width: 95%;
     }
 }
+
+.subheader {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 0.8em; /* or any size you prefer */
+    background: rgba(255, 255, 255, 0.7); /* Optional: if you want a background */
+}
