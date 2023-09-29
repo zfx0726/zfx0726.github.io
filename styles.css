@@ -108,14 +108,28 @@ a, select {
 }
 
 
-/* Assuming .visualization-container is the container wrapping both the map and the bar graph */
-.visualization-container {
+/* Making the visualization section a flex container to organize child elements */
+.visualization-section {
     display: flex;
-    flex-wrap: wrap; /* Allows the container's children to wrap onto the next line if there's not enough space */
+    flex-direction: column; /* Stack the map and bar graph vertically on smaller screens */
+    align-items: center; /* Center the child elements */
+    gap: 20px; /* Provide some gap between child elements */
 }
 
-@media (max-width: 768px) { /* Adjust the breakpoint as needed */
-    .visualization-container {
-        flex-direction: column; /* Stacks the children vertically on small screens */
+/* Make SVG elements responsive */
+.visualization-section svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Handle overflow for smaller screens */
+.visualization-section {
+    overflow: auto;
+}
+
+/* Media query for larger screens */
+@media(min-width: 768px) {
+    .visualization-section {
+        flex-direction: row; /* Place the map and bar graph side by side on larger screens */
     }
 }
