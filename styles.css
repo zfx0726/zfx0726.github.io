@@ -44,8 +44,8 @@ select {
 .visualization-section {
     width: 90%;
     margin: auto;
-    margin-top: 0.5em; /* Reduced margin-top by 2/3 */
-    padding-top: 0.5em;
+    margin-top: 0.67em; /* Reduced margin-top by 2/3 */
+    padding-top: 1em;
     text-align: center;
 }
 
