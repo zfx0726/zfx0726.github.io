@@ -1,32 +1,63 @@
-body {
-    font-family: 'Arial', sans-serif;
+/* Reset some default styles in browsers */
+body, h1, h2, h3, p, ul {
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
 }
 
-#container {
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    padding-top: 20px; /* Adjusted space for the fixed header */
+}
+
+header {
+    background: #50b3a2;
+    color: #ffffff;
+    text-align: center;
+    padding: 1em 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+header h1 {
+    font-size: 2em;
+}
+
+.filter-section {
+    margin: 2em 0 3em 0;
+    text-align: center;
+    padding-top: 80px; /* Adjusted space for the fixed header */
+}
+
+label {
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+select {
+    padding: 10px;
+    font-size: 1em;
+}
+
+.visualization-section {
     width: 90%;
     margin: auto;
 }
 
-#map, #bar-chart {
-    background: #fff;
-    margin: 20px 0;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 2px 2px 12px #aaa;
-}
+/* Media Query for responsiveness */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.5em;
+    }
 
+    label {
+        font-size: 1em;
+    }
 
-.tooltip {
-    position: absolute;
-    text-align: center;
-    padding: 8px;
-    font: 12px sans-serif;
-    background: #f9f9f9;
-    border: solid 1px #cfcfcf;
-    border-radius: 4px;
-    pointer-events: none;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    select {
+        width: 100%;
+    }
 }
