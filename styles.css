@@ -27,7 +27,7 @@ header h1 {
 }
 
 .filter-section {
-    margin: 80px 0; /* Adjusted top margin to create space below the fixed header */
+    margin: 0; /* Adjusted top margin to create space below the fixed header */
     text-align: center;
 }
 
