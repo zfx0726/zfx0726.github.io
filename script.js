@@ -105,6 +105,40 @@ function renderVisualizations(stateData, csvData) {
             const xScale = d3.scaleBand().domain(barData.map(d => d.state)).range([0, width]).padding(0.1);
             const yScale = d3.scaleLinear().domain([0, maxRate]).range([height, 0]);
 
+
+            // Create x-axis
+    const xAxis = d3.axisBottom(xScale);
+    svgBar.append('g')
+        .attr('class', 'x-axis')
+        .attr('transform', `translate(0, ${height})`)
+        .call(xAxis)
+        .selectAll('text')
+        .style('text-anchor', 'middle');
+
+    // Label x-axis
+    svgBar.append('text')
+        .attr('class', 'x-label')
+        .attr('x', width / 2)
+        .attr('y', height + 40) // Adjust the distance of the label from the x-axis
+        .style('text-anchor', 'middle')
+        .text('State'); // Add your label here
+
+    // Create y-axis
+    const yAxis = d3.axisLeft(yScale);
+    svgBar.append('g')
+        .attr('class', 'y-axis')
+        .call(yAxis);
+
+    // Label y-axis
+    svgBar.append('text')
+        .attr('class', 'y-label')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -height / 2)
+        .attr('y', -40) // Adjust the distance of the label from the y-axis
+        .style('text-anchor', 'middle')
+        .text('Price'); // Add your label here
+
+
             svgBar.selectAll('rect').remove();
             svgBar.selectAll('rect')
                 .data(barData)
