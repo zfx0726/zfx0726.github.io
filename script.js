@@ -82,7 +82,7 @@ function renderVisualizations(stateData, csvData) {
     // Code to render the bar chart can be added here similar to the map rendering, ensure to remove the previous bars before appending new ones
 
         // Remove the previous bar chart SVG
-        d3.select('#visualization-section').selectAll('svg').remove();
+        d3.select('#visualization-section').selectAll('rect').remove();
 
 
 
