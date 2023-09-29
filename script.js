@@ -79,7 +79,42 @@ function renderVisualizations(stateData, csvData) {
             tooltip.transition().duration(500).style('opacity', 0).attr('stroke', 'white').attr('stroke-width', '1');
         });
 
-    // Code to render the bar chart can be added here similar to the map rendering, ensure to remove the previous bars before appending new ones
+        // Bar Chart Rendering
+            const svgBar = d3.select('#visualization-section').append('svg').attr('width', width).attr('height', height);
+
+            const barData = Object.keys(stateRates).map(state => {
+                return {
+                    state: state,
+                    avgRate: d3.mean(stateRates[state]) || 0
+                };
+            });
+
+            const xScale = d3.scaleBand().domain(barData.map(d => d.state)).range([0, width]).padding(0.1);
+            const yScale = d3.scaleLinear().domain([0, maxRate]).range([height, 0]);
+
+            svgBar.selectAll('rect').remove();
+            svgBar.selectAll('rect')
+                .data(barData)
+                .enter()
+                .append('rect')
+                .attr('x', d => xScale(d.state))
+                .attr('y', d => yScale(d.avgRate))
+                .attr('width', xScale.bandwidth())
+                .attr('height', d => height - yScale(d.avgRate))
+                .attr('fill', d => colorScale(d.avgRate))
+                .on('mouseover', (event, d) => {
+                    const state = d.state || 'Unknown State';
+                    const avgRateStr = d.avgRate ? `$${d.avgRate.toFixed(0).toLocaleString('en-US', { maximumFractionDigits: 0 })}` : 'Unknown Rate';
+                    tooltip.transition().duration(200).style('opacity', .9);
+                    tooltip.html(state + '<br>' + avgRateStr)
+                           .style('left', (event.pageX - tooltip.node().offsetWidth / 2) + 'px')
+                           .style('top', (event.pageY - tooltip.node().offsetHeight - 10) + 'px')
+                           .attr('fill', '#ff4500');
+                })
+                .on('mouseout', d => {
+                    tooltip.transition().duration(500).style('opacity', 0).attr('fill', d => colorScale(d.avgRate));
+                });
+
 }
 
 // Load and render the map and bar chart
