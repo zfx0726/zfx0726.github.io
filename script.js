@@ -133,16 +133,16 @@ function renderVisualizations(stateData, csvData) {
 
 
                 // Add text labels for state abbreviations under each bar
-svgBar.selectAll('text')
-    .data(barData)
-    .enter()
-    .append('text')
-    .text(d => d.state) // Display the state abbreviation
-    .attr('x', d => xScale(d.state) + xScale.bandwidth() / 2) // Centered under the bar
-    .attr('y', d => yScale(d.avgRate) + 20) // Adjust the vertical position as needed
-    .attr('text-anchor', 'middle') // Center the text horizontally
-    .attr('font-size', '12px')
-    .attr('fill', 'black'); // Adjust text color as needed
+                svgBar.selectAll('text')
+                    .data(barData)
+                    .enter()
+                    .append('text')
+                    .text(d => d.state) // Display the state abbreviation
+                    .attr('x', d => xScale(d.state) + xScale.bandwidth() / 2) // Centered under the bar
+                    .attr('y', d => yScale(d.avgRate) + 5) // Position just below the bottom of the bar
+                    .attr('text-anchor', 'middle') // Center the text horizontally
+                    .attr('font-size', '12px')
+                    .attr('fill', 'black'); // Adjust text color as needed
 
 
     // Create y-axis
