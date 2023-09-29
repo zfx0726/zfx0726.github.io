@@ -99,6 +99,9 @@ function renderVisualizations(stateData, csvData) {
                 };
             });
 
+            // Sort the barData array in descending order by avgRate
+            barData.sort((a, b) => b.avgRate - a.avgRate);
+
             const xScale = d3.scaleBand().domain(barData.map(d => d.state)).range([0, width]).padding(0.1);
             const yScale = d3.scaleLinear().domain([0, maxRate]).range([height, 0]);
 
