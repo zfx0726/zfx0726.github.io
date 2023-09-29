@@ -79,8 +79,12 @@ function renderVisualizations(stateData, csvData) {
             tooltip.transition().duration(500).style('opacity', 0).attr('stroke', 'white').attr('stroke-width', '1');
         });
 
+    // Code to render the bar chart can be added here similar to the map rendering, ensure to remove the previous bars before appending new ones
 
-        
+        // Remove the previous bar chart SVG
+        d3.select('#visualization-section').selectAll('svg').remove();
+
+
 
         // Bar Chart Rendering
             const svgBar = d3.select('#visualization-section').append('svg').attr('width', width).attr('height', height);
