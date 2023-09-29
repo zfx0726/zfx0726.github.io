@@ -108,28 +108,3 @@ a, select {
 }
 
 
-/* Making the visualization section a flex container to organize child elements */
-.visualization-section {
-    display: flex;
-    flex-direction: column; /* Stack the map and bar graph vertically on smaller screens */
-    align-items: center; /* Center the child elements */
-    gap: 20px; /* Provide some gap between child elements */
-}
-
-/* Make SVG elements responsive */
-.visualization-section svg {
-    max-width: 100%;
-    height: auto;
-}
-
-/* Handle overflow for smaller screens */
-.visualization-section {
-    overflow: auto;
-}
-
-/* Media query for larger screens */
-@media(min-width: 768px) {
-    .visualization-section {
-        flex-direction: row; /* Place the map and bar graph side by side on larger screens */
-    }
-}
