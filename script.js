@@ -29,7 +29,9 @@ const projection = d3.geoAlbersUsa().translate([width / 2, height / 2]).scale(10
 const path = d3.geoPath().projection(projection);
 
 // Create the SVG container for the map
-const svgMap = d3.select('#visualization-section').append('svg').attr('width', width).attr('height', height);
+const svgMap = d3.select('#map-container').append('svg').attr('viewBox', `0 0 ${width} ${height}`);
+
+
 
 // Create a tooltip
 const tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
@@ -87,7 +89,7 @@ function renderVisualizations(stateData, csvData) {
 
         // Bar Chart Rendering
         // Create a new SVG container for the bar chart
-    const svgBar = d3.select('#visualization-section').append('svg')
+    const svgBar = d3.select('#bar-chart-container').append('svg').attr('viewBox', `0 0 ${width} ${height}`)
         .attr('width', width)
         .attr('height', height)
         .attr('class', 'bar-chart');

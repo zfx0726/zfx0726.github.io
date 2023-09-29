@@ -66,7 +66,22 @@ select:hover {
     background-color: #fff;
     padding: 20px;
     border-radius: 5px;
+    overflow: hidden;    
 }
+
+#map-container, #bar-chart-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 55%; /* for a golden ratio aspect ratio */
+    overflow: hidden;
+}
+
+#map-container svg, #bar-chart-container svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
 
 .tooltip {
     position: absolute;
@@ -95,5 +110,13 @@ select:hover {
 
     .container {
         width: 95%;
+    }
+}
+
+@media (max-width: 600px) {
+    /* ...existing styles... */
+    .visualization-section {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 }
