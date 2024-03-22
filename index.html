@@ -11,17 +11,24 @@
 <body>
     <header>
         <h1>Healthcare Reimbursement Structures Vary Considerably</h1>
-        <div class="subheader">(hover over charts for more detail)</div>
+        <!-- <div class="subheader">(hover over charts for more detail)</div> -->
     </header>
     <section class="filter-section">
         <div class="container">
             <script type='module' src='https://prod-useast-a.online.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js'></script><tableau-viz id='tableau-viz' src='https://prod-useast-a.online.tableau.com/t/turquoise/views/ReimbursementStructure/ReimbursementStructurePrevalenceDashboard' width='1000' height='840' hide-tabs toolbar='bottom' ></tableau-viz>
-
+            <!-- <label for="billing-code-filter">Filter by Billing Code </label>
+            <select id="billing-code-filter">
+                <option value="47562">47562: Laparoscopy Surgical Cholecystectomy</option>
+                <option value="15777">15777: Implant Biological Implant for Soft Tissue Reinforcement</option>
+                <option value="33249">33249: Insertion/Replacement of Permanent Defibrillator with Transvenous Leads, Dual Chamber</option>
+                <option value="77373">77373: Stereotactic Body Radiation Delivery</option>
+                <option value="36522">36522: Photopheresis Extracorporeal</option>
+            </select> -->
         </div>
     </section>
-    <section class="visualization-section" id="visualization-section">
+    <!-- <section class="visualization-section" id="visualization-section">
         <!-- The map and the bar chart will be appended here by D3.js -->
-    </section>
+    </section> -->
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="script.js"></script>
 </body>
