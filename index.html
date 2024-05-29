@@ -9,12 +9,12 @@
             margin: 0;
             background-color: #02363d;
             color: #ffffff;
-            height: 400vh; /* Make body taller to enable scrolling */
+            height: 270vh; /* Make body taller to enable scrolling */
             overflow-x: hidden;
         }
         .container, .next-section {
             position: relative;
-            height: 200vh;
+            height: 135vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -42,17 +42,18 @@
         }
         .bottom-text {
             position: fixed;
-            top: 60%;
+            top: 80%;
             width: 100%;
             text-align: center;
             opacity: 0;
-            transition: opacity 1s;
+            transition: opacity 2s;
         }
         .next-section .next-text {
+            position: fixed;
             text-align: center;
-            margin-top: 20px;
+            margin-top: 80px;
             opacity: 0;
-            transition: opacity 1s;
+            transition: opacity 2s;
         }
     </style>
 </head>
