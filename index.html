@@ -2,33 +2,361 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <title>Data Visualization</title>
+    <title>Price Trend Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #02363d;
+            color: #ffffff;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .chart {
+            width: 70%;
+            min-width: 300px;
+            margin: 20px;
+        }
+        select {
+            width: 300px;
+            margin-bottom: 20px;
+            background-color: #176f6f;
+            color: #ffffff;
+            border: 1px solid #a8e6e1;
+        }
+        #map {
+            width: 100%;
+            height: 600px;
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Healthcare Costs Vary Dramatically by State</h1>
-        <div class="subheader">(hover over charts for more detail)</div>
-    </header>
-    <section class="filter-section">
-        <div class="container">
-            <label for="billing-code-filter">Filter by Billing Code </label>
-            <select id="billing-code-filter">
-                <option value="47562">47562: Laparoscopy Surgical Cholecystectomy</option>
-                <option value="15777">15777: Implant Biological Implant for Soft Tissue Reinforcement</option>
-                <option value="33249">33249: Insertion/Replacement of Permanent Defibrillator with Transvenous Leads, Dual Chamber</option>
-                <option value="77373">77373: Stereotactic Body Radiation Delivery</option>
-                <option value="36522">36522: Photopheresis Extracorporeal</option>
-            </select>
-        </div>
-    </section>
-    <section class="visualization-section" id="visualization-section">
-        <!-- The map and the bar chart will be appended here by D3.js -->
-    </section>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <script src="script.js"></script>
+    <h1>Price Trend Dashboard</h1>
+    <div style="text-align: center;">
+        <label for="dataSelect">Choose Data:</label>
+        <select id="dataSelect" onchange="updateChart()">
+            <option value="tqCommercial">TQ Commercial Rates Index</option>
+            <option value="tqCommercialBenchmarks">TQ Commercial Rates Index + Benchmarks</option>
+            <option value="tqServiceSubIndices">TQ Commercial Rates Service Sub-indices</option>
+            <option value="yoyServiceInflation">YoY Commercial Inflation Rate by Service</option>
+            <option value="yoyStateInflation">YoY Inflation Rates for Top 10 States (by Population)</option>
+        </select>
+    </div>
+    <div id="chartContainer" class="chart-container">
+        <canvas id="mainChart" class="chart"></canvas>
+    </div>
+    <div id="map"></div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+    <script>
+        const colors = {
+            primaryDark: '#02363d',
+            primaryWhite: '#ffffff',
+            turquoiseDark: '#176f6f',
+            turquoiseLight: '#a8e6e1',
+            oranges: '#c86628',
+            orangesAlt: '#ba4e01',
+            bananas: '#eab333',
+            bananasAlt: '#e5a000',
+            turquoiseOG: '#36c5ba'
+        };
+
+        const tqCommercialData = {
+            labels: ["2021_Q4", "2022_Q1", "2022_Q2", "2022_Q3", "2022_Q4", "2023_Q1", "2023_Q2", "2023_Q3", "2023_Q4", "2024_Q1"],
+            datasets: [
+                {
+                    label: "TQ Commercial",
+                    data: [100.00, 100.72, 101.16, 101.23, 101.83, 101.90, 102.87, 104.31, 104.49, 105.37],
+                    borderColor: colors.turquoiseOG,
+                    backgroundColor: colors.turquoiseOG,
+                    fill: false
+                }
+            ]
+        };
+
+        const tqCommercialBenchmarksData = {
+            labels: ["2021_Q4", "2022_Q1", "2022_Q2", "2022_Q3", "2022_Q4", "2023_Q1", "2023_Q2", "2023_Q3", "2023_Q4", "2024_Q1"],
+            datasets: [
+                {
+                    label: "TQ Commercial",
+                    data: [100.00, 100.72, 101.16, 101.23, 101.83, 101.90, 102.87, 104.31, 104.49, 105.37],
+                    borderColor: colors.turquoiseOG,
+                    backgroundColor: colors.turquoiseOG,
+                    fill: false
+                },
+                {
+                    label: "CPI",
+                    data: [100.00, 102.83, 105.38, 106.00, 106.41, 107.90, 108.73, 109.43, 109.70, 111.52],
+                    borderColor: colors.bananas,
+                    backgroundColor: colors.bananas,
+                    fill: false
+                },
+                {
+                    label: "CPI Hospital Services",
+                    data: [100.00, 100.93, 101.82, 102.62, 103.99, 104.29, 105.28, 108.41, 110.76, 112.47],
+                    borderColor: colors.oranges,
+                    backgroundColor: colors.oranges,
+                    fill: false
+                }
+            ]
+        };
+
+        const serviceSubIndicesData = {
+            labels: ["2021_Q4", "2022_Q1", "2022_Q2", "2022_Q3", "2022_Q4", "2023_Q1", "2023_Q2", "2023_Q3", "2023_Q4", "2024_Q1"],
+            datasets: [
+                {
+                    label: "Outpatient Surgical Groupers",
+                    data: [100, 101.3, 101.6, 101.5, 102.0, 102.1, 103.6, 104.8, 104.9, 106.6],
+                    borderColor: colors.turquoiseDark,
+                    backgroundColor: colors.turquoiseDark,
+                    fill: false
+                },
+                {
+                    label: "Radiology",
+                    data: [100, 100.5, 100.7, 100.7, 101.3, 101.3, 102.1, 103.5, 103.8, 104.6],
+                    borderColor: colors.turquoiseLight,
+                    backgroundColor: colors.turquoiseLight,
+                    fill: false
+                },
+                {
+                    label: "Labs",
+                    data: [100, 100.9, 101.3, 101.3, 102.0, 102.5, 103.5, 104.5, 104.9, 106.4],
+                    borderColor: colors.bananas,
+                    backgroundColor: colors.bananas,
+                    fill: false
+                },
+                {
+                    label: "Cardiac Catheterization",
+                    data: [100, 100.9, 101.2, 101.2, 101.4, 102.1, 103.5, 105.2, 105.0, 106.4],
+                    borderColor: colors.oranges,
+                    backgroundColor: colors.oranges,
+                    fill: false
+                },
+                {
+                    label: "Emergency Department",
+                    data: [100, 100.6, 101.0, 101.2, 102.0, 102.0, 103.7, 105.2, 106.0, 106.6],
+                    borderColor: colors.orangesAlt,
+                    backgroundColor: colors.orangesAlt,
+                    fill: false
+                },
+                {
+                    label: "Hospice",
+                    data: [100, 100, 100.3, 99.3, 99.1, 99.1, 99.9, 100.8, 100.8, 101.9],
+                    borderColor: colors.turquoiseOG,
+                    backgroundColor: colors.turquoiseOG,
+                    fill: false
+                },
+                {
+                    label: "ICU Bed",
+                    data: [100, 100.3, 100.6, 101.2, 101.6, 101.7, 103.9, 104.7, 105.2, 105.9],
+                    borderColor: colors.turquoiseDark,
+                    backgroundColor: colors.turquoiseDark,
+                    fill: false
+                },
+                {
+                    label: "NICU",
+                    data: [100, 100, 101.6, 102.1, 103.2, 103.2, 104.7, 105.1, 105.1, 105.9],
+                    borderColor: colors.turquoiseLight,
+                    backgroundColor: colors.turquoiseLight,
+                    fill: false
+                },
+                {
+                    label: "Rehab",
+                    data: [100, 100.5, 100.8, 101.3, 102.1, 102.1, 103.7, 104.3, 104.0, 105.0],
+                    borderColor: colors.bananas,
+                    backgroundColor: colors.bananas,
+                    fill: false
+                },
+                {
+                    label: "Step Down / DOU Bed",
+                    data: [100, 100.6, 101.5, 102.3, 102.7, 102.8, 104.1, 104.3, 104.3, 105.1],
+                    borderColor: colors.oranges,
+                    backgroundColor: colors.oranges,
+                    fill: false
+                }
+            ]
+        };
+
+        const yoyServiceInflationData = {
+            labels: ["Overall", "Cardiac Catheterization", "Emergency Department Visit", "Outpatient Surgical Groupers", "Radiology", "Hospice", "Rehab", "Labs", "NICU", "ICU Bed", "Step Down / DOU Bed"],
+            datasets: [
+                {
+                    label: "Year-over-Year Inflation",
+                    data: [3.4, 4.8, 4.5, 4.3, 3.2, 2.8, 2.8, 1.9, 1.8, 1.8, 1.6],
+                    backgroundColor: function(context) {
+                        const value = context.raw;
+                        return value === 3.4 ? colors.turquoiseOG : colors.oranges;
+                    },
+                    borderColor: function(context) {
+                        const value = context.raw;
+                        return value === 3.4 ? colors.turquoiseOG : colors.oranges;
+                    },
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        const yoyStateInflationData = {
+            labels: ["OH", "CA", "FL", "TX", "IL", "NY", "GA", "MI", "PA", "NC"],
+            datasets: [
+                {
+                    label: 'Inflation Rate',
+                    data: [8.2, 5.7, 4.6, 3.6, 2.7, 2.6, 2.5, 1.0, 0.9, -2.5],
+                    backgroundColor: [
+                        colors.oranges,
+                        colors.turquoiseOG,
+                        colors.bananas,
+                        colors.turquoiseDark,
+                        colors.turquoiseLight,
+                        colors.bananasAlt,
+                        colors.orangesAlt,
+                        colors.oranges,
+                        colors.turquoiseOG,
+                        colors.turquoiseLight
+                    ],
+                    borderColor: [
+                        colors.oranges,
+                        colors.turquoiseOG,
+                        colors.bananas,
+                        colors.turquoiseDark,
+                        colors.turquoiseLight,
+                        colors.bananasAlt,
+                        colors.orangesAlt,
+                        colors.oranges,
+                        colors.turquoiseOG,
+                        colors.turquoiseLight
+                    ],
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        const mainCtx = document.getElementById('mainChart').getContext('2d');
+        const chartContainer = document.getElementById('chartContainer');
+
+        let chart = new Chart(mainCtx, {
+            type: 'line',
+            data: tqCommercialData,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Date',
+                            color: colors.primaryWhite
+                        },
+                        ticks: {
+                            color: colors.primaryWhite
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Index Value',
+                            color: colors.primaryWhite
+                        },
+                        ticks: {
+                            color: colors.primaryWhite
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: colors.primaryWhite
+                        }
+                    }
+                }
+            }
+        });
+
+        function createMap(data) {
+            const width = 1200;
+            const height = 600;
+            const projection = d3.geoAlbersUsa()
+                .scale(1200)
+                .translate([width / 2, height / 2]); 
+            const path = d3.geoPath().projection(projection);
+
+            const svg = d3.select("#map").append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            svg.append("g")
+                .selectAll("path")
+                .data(data.features)
+                .join("path")
+                .attr("d", path)
+                .attr("fill", d => {
+                    const stateName = d.properties.name;
+                    const index = yoyStateInflationData.labels.findIndex(label => label === stateName);
+                    return index !== -1 ? yoyStateInflationData.datasets[0].backgroundColor[index] : '#ccc';
+                })
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 0.5);
+        }
+
+        function updateChart() {
+            const dataType = document.getElementById('dataSelect').value;
+            d3.select("#map").html(""); // Clear previous map
+
+            switch (dataType) {
+                case 'tqCommercial':
+                case 'tqCommercialBenchmarks':
+                case 'tqServiceSubIndices':
+                    chart.config.type = 'line'; 
+                    chart.data = {
+                        labels: (dataType === 'tqCommercial' ? tqCommercialData : 
+                                 dataType === 'tqCommercialBenchmarks' ? tqCommercialBenchmarksData : 
+                                 serviceSubIndicesData).labels,
+                        datasets: (dataType === 'tqCommercial' ? tqCommercialData : 
+                                   dataType === 'tqCommercialBenchmarks' ? tqCommercialBenchmarksData : 
+                                   serviceSubIndicesData).datasets
+                    };
+                    chart.options.scales.y.title.text = 'Index Value';
+                    chart.options.indexAxis = 'x'; // Ensure index axis is horizontal for line charts
+                    break;
+
+                case 'yoyServiceInflation':
+                    chart.config.type = 'bar';
+                    chart.data = yoyServiceInflationData;
+                    chart.options.scales.x.title.text = 'Service Type';
+                    chart.options.scales.y.title.text = 'Inflation Rate (%)';
+                    chart.options.indexAxis = 'y'; // Set index axis to vertical for bar chart
+                    break;
+
+                case 'yoyStateInflation':
+                    chartContainer.style.display = 'none'; // Hide the chart container
+                    document.getElementById('map').style.display = 'block'; // Show the map container
+                    fetch('https://cdn.jsdelivr.net/npm/us-atlas/states-10m.json')
+                        .then(response => response.json())
+                        .then(data => createMap(topojson.feature(data, data.objects.states)));
+                    return; // Exit the function early for map display
+            }
+
+            // Common chart options (apply to all non-map charts)
+            chart.options.scales.x.display = true;
+            chart.options.scales.y.display = true;
+            chart.options.plugins.legend.display = (dataType !== 'yoyServiceInflation'); // Hide legend for inflation bar chart
+
+            // Display the chart container and hide the map for non-map charts
+            chartContainer.style.display = 'flex'; 
+            document.getElementById('map').style.display = 'none';
+            chart.update();
+        }
+    </script>
 </body>
 </html>
+
