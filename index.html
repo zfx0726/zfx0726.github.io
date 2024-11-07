@@ -262,10 +262,17 @@
             background: #e5a000;
         }
 
+        .controls-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        gap: 2rem;
+    }
+
         .dropdown {
-            margin-bottom: 1rem;
-            position: relative;
-            text-align: left;
+            margin-bottom: 0;  /* Remove bottom margin since it's handled by container */
+            flex: 1;           /* Allow dropdown to take available space */
         }
 
 	.press-section {
@@ -328,16 +335,26 @@
         }
 
         .toggle-view {
-            margin-top: 2rem;
-            text-align: left;
-            margin-bottom: 1.5rem;
-        }
+        margin-top: 0;     /* Remove top margin since it's handled by container */
+        margin-bottom: 0;  /* Remove bottom margin since it's handled by container */
+        flex: 1;           /* Allow toggle to take available space */
+    }
+    select {
+        padding: 0.5rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #DCDFE4;
+        width: 100%;       /* Make select fill its container */
+        max-width: 300px;  /* Limit maximum width */
+    }
 
-        .toggle-switch {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
+
+
+    .toggle-switch {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
 
         .toggle-label {
             font-weight: 600;
@@ -383,6 +400,7 @@
         input:checked + .slider:before {
             transform: translateX(25px);
         }
+        
     </style>
 
     <!-- React and Dependencies -->
@@ -545,7 +563,7 @@
                     <div className="header">
                         <div>
                             <h1 className="title">TQ Market Trends - MOCK DATA</h1>
-                            <p className="subtitle">A look at the state of healthcare markets</p>
+                        
                             <small>Data as of [MOCK DATA]</small>
                         </div>
                         <div className="buttons">
@@ -554,30 +572,38 @@
                     </div>
 
                     {/* Service Drill-Down Dropdown */}
-                    <div className="dropdown">
-                        <label htmlFor="serviceSelect">Select a Service: </label>
-                        <select
-                            id="serviceSelect"
-                            value={selectedService}
-                            onChange={(e) => setSelectedService(e.target.value)}
-                        >
-                            {Object.keys(serviceData).map((service) => (
-                                <option key={service} value={service}>{service}</option>
-                            ))}
-                        </select>
-                    </div>
+                    <div className="controls-container">
+
+                        <div className="dropdown">
+                            <label htmlFor="serviceSelect">Select a Service: </label>
+                            <select
+                                id="serviceSelect"
+                                value={selectedService}
+                                onChange={(e) => setSelectedService(e.target.value)}
+                            >
+                                {Object.keys(serviceData).map((service) => (
+                                    <option key={service} value={service}>{service}</option>
+                                ))}
+                            </select>
+                        </div>
 
                     {/* Toggle View */}
                     <div className="toggle-view">
                         <div className="toggle-switch">
                             <label className="toggle-label">View Mode:</label>
                             <div className="toggle">
-                                <input type="checkbox" id="toggleSwitch" checked={viewMode === 'Geographic'} onChange={handleToggleChange} />
+                                <input 
+                                    type="checkbox" 
+                                    id="toggleSwitch" 
+                                    checked={viewMode === 'Geographic'} 
+                                    onChange={handleToggleChange} 
+                                />
                                 <label htmlFor="toggleSwitch" className="slider"></label>
                                 <span>{viewMode === 'National' ? 'National Price Trends' : 'Geographic View (Coming Soon)'}</span>
                             </div>
                         </div>
                     </div>
+                </div>
 
                     {/* Metrics */}
                     <div className="metrics-grid">
@@ -665,7 +691,7 @@
                         <h2 className="press-title">Press Features</h2>
                         <div className="press-list">
                             <div className="press-card">
-                                <img className="press-card-logo" src="https://mlt.org/wp-content/uploads/2017/04/WSJ-Logo.jpg" alt="Wall Street Journal Logo" />
+                                <img className="press-card-logo" src="https://images.dowjones.com/wp-content/uploads/sites/107/2016/10/17184804/The-Wall-Street-Journal-Logo.jpg" alt="Wall Street Journal Logo" />
                                 <h3 className="press-card-title">Surging Hospital Prices Are Helping Keep Inflation High</h3>
                                 <a className="press-card-link" href="https://www.wsj.com/health/healthcare/surging-hospital-prices-are-helping-keep-inflation-high-a146258b" target="_blank">Read Article</a>
                             </div>
