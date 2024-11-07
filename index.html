@@ -2,288 +2,696 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Price Trend Visualization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turquoise Health Market Trends</title>
+    
+    <!-- Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Base styles -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
-            background-color: #02363d;
-            color: #ffffff;
-            height: 270vh; /* Make body taller to enable scrolling */
-            overflow-x: hidden;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container, .next-section {
-            position: relative;
-            height: 135vh;
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8f8fa;
+            color: #02363d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #02363d;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #176f6f;
+        }
+
+        .button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #176f6f;
+            border-radius: 0.5rem;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #176f6f;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background: #a8e6e1;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            position: relative;
+            padding-left: 1.5rem;
+            background: #ffffff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 9999px;
+        }
+
+        .metric-card.blue::before { background-color: #02363d; }
+        .metric-card.green::before { background-color: #198038; }
+        .metric-card.orange::before { background-color: #e5a000; }
+
+        .metric-label {
+            color: #02363d;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-sublabel {
+            color: #02363db3;
+            font-size: 0.875rem;
+        }
+
+        .chart-card {
+            background: #ffffff;
+            border: 1px solid #DCDFE4;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-legend {
+            display: flex;
             justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #02363d;
+        }
+
+        .legend-dot {
+            width: 0.75rem;
+            height: 0.75rem;
+            border-radius: 9999px;
+        }
+
+        .legend-dot.blue { background-color: #02363d; }
+        .legend-dot.green { background-color: #198038; }
+        .legend-dot.orange { background-color: #e5a000; }
+
+        .report-section {
+            margin-top: 4rem;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #02363d;
+        }
+
+        .report-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .report-card {
+            background: #ffffff;
+            border: 1px solid #DCDFE4;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #02363d;
+        }
+
+        .report-card-description {
+            font-size: 1rem;
+            color: #02363db3;
+            margin-bottom: 1rem;
+        }
+
+        .report-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: #176f6f;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .report-button:hover {
+            background: #198038;
+        }
+
+        .data-stories-section {
+            margin-top: 4rem;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-stories-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #02363d;
+        }
+
+        .data-stories-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .data-story-card {
+            background: #ffffff;
+            border: 1px solid #DCDFE4;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-story-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #02363d;
+        }
+
+        .data-story-card-description {
+            font-size: 1rem;
+            color: #02363db3;
+            margin-bottom: 1rem;
+        }
+
+        .data-story-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: #EAB333;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .data-story-button:hover {
+            background: #e5a000;
+        }
+
+        .dropdown {
+            margin-bottom: 1rem;
+            position: relative;
+            text-align: left;
+        }
+
+	.press-section {
+            margin-top: 4rem;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .press-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #02363d;
+        }
+
+        .press-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .press-card {
+            background: #ffffff;
+            border: 1px solid #DCDFE4;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .press-card-logo {
+            height: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .press-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #02363d;
+        }
+
+        .press-card-link {
+            font-size: 1rem;
+            color: #176f6f;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .press-card-link:hover {
+            text-decoration: underline;
+        }
+
+        select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #DCDFE4;
+        }
+
+        .toggle-view {
+            margin-top: 2rem;
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-switch {
+            display: flex;
+            gap: 1rem;
             align-items: center;
         }
-        .sticky {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 50%;
-            transform: translateY(-50%);
-            text-align: center;
-            opacity: 0;
-            transition: opacity 2s;
+
+        .toggle-label {
+            font-weight: 600;
+            color: #02363d;
         }
-        .visible {
-            opacity: 1;
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .chart-container {
-            width: 70%;
-            max-width: 800px;
-            margin: 20px 0;
+
+        .toggle input {
+            display: none;
         }
-        #mainChart, #barChart {
-            width: 100%;
+
+        .toggle input:checked + .slider {
+            background-color: #198038;
         }
-        .bottom-text {
-            position: fixed;
-            top: 80%;
-            width: 100%;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 2s;
+
+        .slider {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background-color: #DCDFE4;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        .next-section .next-text {
-            position: fixed;
-            text-align: center;
-            margin-top: 80px;
-            opacity: 0;
-            transition: opacity 2s;
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(25px);
         }
     </style>
+
+    <!-- React and Dependencies -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+    
+    <!-- Recharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.10.3/Recharts.min.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="sticky" id="intro">
-            <h1>Healthcare prices have been on a steady climb for years...</h1>
-        </div>
-        <div class="chart-container sticky" id="chartSection" style="opacity: 0;">
-            <canvas id="mainChart"></canvas>
-        </div>
-        <div class="bottom-text" id="mid">
-            <h1>... but we’ve recently seen price increases accelerate.</h1>
-        </div>
-    </div>
+    <div id="root"></div>
 
-    <div class="next-section">
-        <div class="chart-container sticky" id="barChartSection" style="opacity: 0;">
-            <canvas id="barChart"></canvas>
-        </div>
-        <div class="next-text sticky" id="nextIntro" style="opacity: 0; top: 70%;">
-            <h1>Year-over-year inflation has nearly doubled since early 2023.</h1>
-        </div>
-    </div>
+    <script type="text/babel">
+        const {
+            LineChart, Line, XAxis, YAxis, CartesianGrid, 
+            Tooltip, ResponsiveContainer
+        } = Recharts;
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const colors = {
-            turquoiseOG: '#36c5ba'
+        const overallPriceIndexTrends = [
+            { date: '2021_Q4', commercialRates: 100.0, cpi: 100.0, cashPrices: 100.0, listPrices: 100.0, yoyCommercial: null, yoyCPI: null, yoyCash: null, yoyList: null },
+            { date: '2022_Q1', commercialRates: 100.7, cpi: 100.9, cashPrices: 100.8, listPrices: 101.0, yoyCommercial: null, yoyCPI: null, yoyCash: null, yoyList: null },
+            { date: '2022_Q2', commercialRates: 101.2, cpi: 101.8, cashPrices: 101.3, listPrices: 101.4, yoyCommercial: null, yoyCPI: null, yoyCash: null, yoyList: null },
+            { date: '2022_Q3', commercialRates: 101.2, cpi: 102.6, cashPrices: 101.6, listPrices: 101.8, yoyCommercial: null, yoyCPI: null, yoyCash: null, yoyList: null },
+            { date: '2022_Q4', commercialRates: 101.8, cpi: 104.0, cashPrices: 102.4, listPrices: 102.5, yoyCommercial: 1.8, yoyCPI: 4.0, yoyCash: 2.4, yoyList: 2.5 },
+            { date: '2023_Q1', commercialRates: 101.9, cpi: 104.3, cashPrices: 102.5, listPrices: 102.6, yoyCommercial: 1.2, yoyCPI: 3.4, yoyCash: 1.7, yoyList: 1.6 },
+            { date: '2023_Q2', commercialRates: 102.9, cpi: 105.3, cashPrices: 103.5, listPrices: 103.8, yoyCommercial: 1.7, yoyCPI: 3.4, yoyCash: 2.2, yoyList: 2.4 },
+            { date: '2023_Q3', commercialRates: 104.3, cpi: 108.4, cashPrices: 105.8, listPrices: 106.5, yoyCommercial: 3.1, yoyCPI: 5.7, yoyCash: 4.1, yoyList: 4.6 },
+            { date: '2023_Q4', commercialRates: 104.5, cpi: 110.8, cashPrices: 106.4, listPrices: 107.2, yoyCommercial: 2.7, yoyCPI: 6.5, yoyCash: 3.9, yoyList: 4.6 },
+            { date: '2024_Q1', commercialRates: 105.4, cpi: 112.5, cashPrices: 108.0, listPrices: 108.3, yoyCommercial: 3.4, yoyCPI: 7.9, yoyCash: 5.4, yoyList: 5.6 }
+        ];
+
+        const serviceData = {
+            'Overall': overallPriceIndexTrends,
+            'MRI': [
+                { date: '2021_Q4', commercialRates: 500, cashPrices: 480, listPrices: 520, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q1', commercialRates: 520, cashPrices: 500, listPrices: 540, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q2', commercialRates: 530, cashPrices: 510, listPrices: 550, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q3', commercialRates: 540, cashPrices: 520, listPrices: 560, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q4', commercialRates: 550, cashPrices: 530, listPrices: 570, yoyCommercial: 10.0, yoyCash: 10.4, yoyList: 9.6 },
+                { date: '2023_Q1', commercialRates: 560, cashPrices: 540, listPrices: 580, yoyCommercial: 7.7, yoyCash: 8.0, yoyList: 7.4 },
+                { date: '2023_Q2', commercialRates: 570, cashPrices: 550, listPrices: 590, yoyCommercial: 7.5, yoyCash: 7.8, yoyList: 7.3 },
+                { date: '2023_Q3', commercialRates: 580, cashPrices: 560, listPrices: 600, yoyCommercial: 7.4, yoyCash: 7.7, yoyList: 7.1 },
+                { date: '2023_Q4', commercialRates: 590, cashPrices: 570, listPrices: 610, yoyCommercial: 7.3, yoyCash: 7.5, yoyList: 7.0 },
+                { date: '2024_Q1', commercialRates: 600, cashPrices: 580, listPrices: 620, yoyCommercial: 7.1, yoyCash: 7.4, yoyList: 6.9 }
+            ],
+            'CT Scan': [
+                { date: '2021_Q4', commercialRates: 300, cashPrices: 290, listPrices: 310, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q1', commercialRates: 310, cashPrices: 300, listPrices: 320, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q2', commercialRates: 315, cashPrices: 305, listPrices: 325, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q3', commercialRates: 320, cashPrices: 310, listPrices: 330, yoyCommercial: null, yoyCash: null, yoyList: null },
+                { date: '2022_Q4', commercialRates: 330, cashPrices: 320, listPrices: 340, yoyCommercial: 10.0, yoyCash: 10.3, yoyList: 9.7 },
+                { date: '2023_Q1', commercialRates: 340, cashPrices: 330, listPrices: 350, yoyCommercial: 9.7, yoyCash: 10.0, yoyList: 9.4 },
+                { date: '2023_Q2', commercialRates: 350, cashPrices: 340, listPrices: 360, yoyCommercial: 11.1, yoyCash: 11.5, yoyList: 10.8 },
+                { date: '2023_Q3', commercialRates: 355, cashPrices: 345, listPrices: 365, yoyCommercial: 10.9, yoyCash: 11.3, yoyList: 10.6 },
+                { date: '2023_Q4', commercialRates: 360, cashPrices: 350, listPrices: 370, yoyCommercial: 9.1, yoyCash: 9.4, yoyList: 8.8 },
+                { date: '2024_Q1', commercialRates: 370, cashPrices: 360, listPrices: 380, yoyCommercial: 8.8, yoyCash: 9.1, yoyList: 8.6 }
+            ]
         };
 
-        const lineData = {
-            labels: ["2021_Q4", "2022_Q1", "2022_Q2", "2022_Q3", "2022_Q4", "2023_Q1", "2023_Q2", "2023_Q3", "2023_Q4", "2024_Q1"],
-            datasets: [{
-                label: "TQ Commercial",
-                data: [100.00, 100.72, 101.16, 101.23, 101.83, 101.90, 102.87, 104.31, 104.49, 105.37],
-                borderColor: colors.turquoiseOG,
-                backgroundColor: colors.turquoiseOG,
-                fill: false
-            }]
-        };
+        function MetricCard({ label, value, sublabel, color }) {
+            return (
+                <div className={`metric-card ${color}`}>
+                    <div className="metric-label">{label}</div>
+                    <div className="metric-value">{value}</div>
+                    <div className="metric-sublabel">{sublabel}</div>
+                </div>
+            );
+        }
 
-        const barData = {
-            labels: ["2022_Q4", "2023_Q1", "2023_Q2", "2023_Q3", "2023_Q4", "2024_Q1"],
-            datasets: [{
-                label: "Commercial Rate",
-                data: [1.8, 1.2, 1.7, 3.0, 2.6, 3.4],
-                backgroundColor: colors.turquoiseOG
-            }]
-        };
+        function DrillDownChart({ service }) {
+            const data = serviceData[service] || [];
+            return (
+                <div className="chart-card">
+                    <div style={{ width: '100%', height: 400 }}>
+                        <ResponsiveContainer>
+                            <LineChart 
+                                data={data}
+                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                <XAxis 
+                                    dataKey="date" 
+                                    tick={{ fill: '#02363db3', fontSize: 12 }}
+                                    axisLine={{ stroke: '#DCDFE4' }}
+                                />
+                                <YAxis 
+                                    domain={['auto', 'auto']}
+                                    tick={{ fill: '#02363db3', fontSize: 12 }}
+                                    axisLine={{ stroke: '#DCDFE4' }}
+                                    label={{ value: service === 'Overall' ? 'Index Price' : 'Average Price ($)', angle: -90, position: 'insideLeft', fill: '#02363db3', fontSize: 12 }}
+                                />
+                                <Tooltip />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="commercialRates" 
+                                    stroke="#02363d" 
+                                    strokeWidth={2.5}
+                                    dot={false}
+                                    name="Commercial Rates"
+                                />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="cashPrices" 
+                                    stroke="#198038" 
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="Cash Prices"
+                                />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="listPrices" 
+                                    stroke="#e5a000" 
+                                    strokeWidth={2}
+                                    dot={false}
+                                    name="List Prices"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div className="chart-legend">
+                        <div className="legend-item">
+                            <div className="legend-dot blue"></div>
+                            <span>Commercial Rates</span>
+                        </div>
+                        <div className="legend-item">
+                            <div className="legend-dot green"></div>
+                            <span>Cash Prices</span>
+                        </div>
+                        <div className="legend-item">
+                            <div className="legend-dot orange"></div>
+                            <span>List Prices</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-        const lineConfig = {
-            type: 'line',
-            data: {
-                labels: lineData.labels.slice(0, 7),
-                datasets: lineData.datasets
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Date',
-                            color: '#ffffff'
-                        },
-                        ticks: {
-                            color: '#ffffff'
-                        }
-                    },
-                    y: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Index Value',
-                            color: '#ffffff'
-                        },
-                        ticks: {
-                            color: '#ffffff'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            }
-        };
+        function Dashboard() {
+            const [selectedService, setSelectedService] = React.useState('Overall');
+            const [viewMode, setViewMode] = React.useState('National');
 
-        const barConfig = {
-            type: 'bar',
-            data: barData,
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Date',
-                            color: '#ffffff'
-                        },
-                        ticks: {
-                            color: '#ffffff'
-                        }
-                    },
-                    y: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Inflation Rate (%)',
-                            color: '#ffffff'
-                        },
-                        ticks: {
-                            color: '#ffffff'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#ffffff'
-                        }
-                    }
-                }
-            }
-        };
-
-        const lineCtx = document.getElementById('mainChart').getContext('2d');
-        const lineChart = new Chart(lineCtx, lineConfig);
-
-        const barCtx = document.getElementById('barChart').getContext('2d');
-        const barChart = new Chart(barCtx, barConfig);
-
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.5
-        };
-
-        const intro = document.getElementById('intro');
-        const chartSection = document.getElementById('chartSection');
-        const mid = document.getElementById('mid');
-        const nextIntro = document.getElementById('nextIntro');
-        const barChartSection = document.getElementById('barChartSection');
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    if (entry.target.id === 'chartSection' && lineChart.data.labels.length < lineData.labels.length) {
-                        let currentDataIndex = lineChart.data.labels.length;
-                        const interval = setInterval(() => {
-                            if (currentDataIndex < lineData.labels.length) {
-                                currentDataIndex++;
-                                lineChart.data.labels = lineData.labels.slice(0, currentDataIndex);
-                                lineChart.update();
-                            } else {
-                                clearInterval(interval);
-                            }
-                        }, 500); // Adjust timing as needed
-                    }
+            const handleToggleChange = () => {
+                if (viewMode === 'National') {
+                    setViewMode('Geographic');
                 } else {
-                    entry.target.classList.remove('visible');
+                    setViewMode('National');
                 }
-            });
-        }, observerOptions);
+            };
 
-        observer.observe(intro);
-        observer.observe(chartSection);
-        observer.observe(mid);
-        observer.observe(nextIntro);
-        observer.observe(barChartSection);
+            const data = serviceData[selectedService];
+            const latestData = data[data.length - 1] || { yoyCommercial: 3.4, yoyCash: 5.3 }; // Default for overall
 
-        let lastScrollTop = 0;
+            return (
+                <div className="container">
+                    {/* Header */}
+                    <div className="header">
+                        <div>
+                            <h1 className="title">TQ Market Trends - MOCK DATA</h1>
+                            <p className="subtitle">A look at the state of healthcare markets</p>
+                            <small>Data as of [MOCK DATA]</small>
+                        </div>
+                        <div className="buttons">
+                            <a className="button" href="#" download="healthcare_data.csv">Download Data (Coming Soon)</a>
+                        </div>
+                    </div>
 
-        window.addEventListener('scroll', () => {
-            const scrollPosition = window.scrollY + window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
+                    {/* Service Drill-Down Dropdown */}
+                    <div className="dropdown">
+                        <label htmlFor="serviceSelect">Select a Service: </label>
+                        <select
+                            id="serviceSelect"
+                            value={selectedService}
+                            onChange={(e) => setSelectedService(e.target.value)}
+                        >
+                            {Object.keys(serviceData).map((service) => (
+                                <option key={service} value={service}>{service}</option>
+                            ))}
+                        </select>
+                    </div>
 
-            let currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (currentScrollTop > lastScrollTop) {
-                // Scrolling down
-                if (scrollPosition > documentHeight * 0.3) {
-                    intro.style.opacity = 0;
-                    chartSection.style.opacity = 1;
-                    mid.style.opacity = 1;
-                }
+                    {/* Toggle View */}
+                    <div className="toggle-view">
+                        <div className="toggle-switch">
+                            <label className="toggle-label">View Mode:</label>
+                            <div className="toggle">
+                                <input type="checkbox" id="toggleSwitch" checked={viewMode === 'Geographic'} onChange={handleToggleChange} />
+                                <label htmlFor="toggleSwitch" className="slider"></label>
+                                <span>{viewMode === 'National' ? 'National Price Trends' : 'Geographic View (Coming Soon)'}</span>
+                            </div>
+                        </div>
+                    </div>
 
-                if (scrollPosition > documentHeight * 0.6) {
-                    chartSection.style.opacity = 0;
-                    mid.style.opacity = 0;
-                }
+                    {/* Metrics */}
+                    <div className="metrics-grid">
+                        <MetricCard
+                            label="Commercial Rates Change"
+                            value={`${latestData.yoyCommercial ?? 'N/A'}%`}
+                            sublabel="Year-over-Year"
+                            color="blue"
+                        />
+                        <MetricCard
+                            label="Cash Prices Change"
+                            value={`${latestData.yoyCash ?? 'N/A'}%`}
+                            sublabel="Year-over-Year"
+                            color="green"
+                        />
+                        <MetricCard
+                            label="Overall Healthcare Inflation (CPI Hospital Services)"
+                            value={`${latestData.yoyCPI ?? '7.9'}%`}
+                            sublabel="Year-over-Year"
+                            color="orange"
+                        />
+                    </div>
 
-                if (scrollPosition > documentHeight * 0.9) {
-                    nextIntro.style.opacity = 1;
-                    barChartSection.style.opacity = 1;
-                }
-            } else {
-                // Scrolling up
-                if (scrollPosition < documentHeight * 0.9) {
-                    nextIntro.style.opacity = 0;
-                    barChartSection.style.opacity = 0;
-                }
+                    {/* Drill-Down Chart */}
+                    <DrillDownChart service={selectedService} />
 
-                if (scrollPosition < documentHeight * 0.6) {
-                    chartSection.style.opacity = 1;
-                    mid.style.opacity = 1;
-                }
+                    {/* Report Section */}
+                    <div className="report-section">
+                        <h2 className="report-title">Market Update Reports</h2>
+                        <div className="report-list">
+                            <div className="report-card">
+                                <h3 className="report-card-title">Q1 2024 Market Update</h3>
+                                <p className="report-card-description">Explore the latest trends in healthcare pricing, with a focus on hospital rates and regional insights for Q1 2024.</p>
+                                <a href="https://blog.turquoise.health/2024-q1-commercial-healthcare-trends/" target="_blank">
+                                    <button className="report-button">View Report</button>
+                                </a>
+                            </div>
+                            <div className="report-card">
+                                <h3 className="report-card-title">2023 Year in Review</h3>
+                                <p className="report-card-description">A comprehensive analysis of yearly healthcare cost trends, highlighting key drivers behind pricing changes across major service categories.</p>
+                                <a href="https://blog.turquoise.health/2023-year-in-review-healthcare-economics-edition/" target="_blank">
+                                    <button className="report-button">View Report</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-                if (scrollPosition < documentHeight * 0.3) {
-                    chartSection.style.opacity = 0;
-                    intro.style.opacity = 1;
-                    mid.style.opacity = 0;
-                }
-            }
-            lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
-        });
+                    {/* Data Stories Section */}
+                    <div className="data-stories-section">
+                        <h2 className="data-stories-title">Data Stories</h2>
+                        <div className="data-stories-list">
+                            <div className="data-story-card">
+                                <h3 className="data-story-card-title">The Price Transparency Discount-Double-Check For Employers</h3>
+                                <p className="data-story-card-description">A detailed look at how price transparency can benefit employers by enabling better cost-checking mechanisms.</p>
+                                <a href="https://blog.turquoise.health/the-price-transparency-discount-double-check-for-employers/" target="_blank">
+                                    <button className="data-story-button">Read Story</button>
+                                </a>
+                            </div>
+                            <div className="data-story-card">
+                                <h3 className="data-story-card-title">Rate Expectations: Price Certainty in Managed Care Contracts</h3>
+                                <p className="data-story-card-description">Understanding how price transparency impacts managed care contracts and brings more pricing certainty for payers and providers.</p>
+                                <a href="https://blog.turquoise.health/rate-expectations-price-certainty-in-managed-care-contracts/" target="_blank">
+                                    <button className="data-story-button">Read Story</button>
+                                </a>
+                            </div>
+                            <div className="data-story-card">
+                                <h3 className="data-story-card-title">Is Price Transparency Helping? Here's Three Ways To Tell</h3>
+                                <p className="data-story-card-description">Explore our biggest indicators of change: competition, pricing, and power, to understand if price transparency is having the desired effects.</p>
+                                <a href="https://blog.turquoise.health/is-price-transparency-helping-heres-three-ways-to-tell/" target="_blank">
+                                    <button className="data-story-button">Read Story</button>
+                                </a>
+                            </div>
+                            <div className="data-story-card">
+                                <h3 className="data-story-card-title">The Healthcare Cost Conundrum</h3>
+                                <p className="data-story-card-description">Prices are stabilizing. Why are expenses still rising? Let's dive into the data behind this healthcare conundrum.</p>
+                                <a href="https://blog.turquoise.health/the-healthcare-cost-conundrum/" target="_blank">
+                                    <button className="data-story-button">Read Story</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-        window.addEventListener('beforeunload', () => {
-            window.scrollTo(0, 0);
-        });
+                    {/* Press Section */}
+                    <div className="press-section">
+                        <h2 className="press-title">Press Features</h2>
+                        <div className="press-list">
+                            <div className="press-card">
+                                <img className="press-card-logo" src="https://mlt.org/wp-content/uploads/2017/04/WSJ-Logo.jpg" alt="Wall Street Journal Logo" />
+                                <h3 className="press-card-title">Surging Hospital Prices Are Helping Keep Inflation High</h3>
+                                <a className="press-card-link" href="https://www.wsj.com/health/healthcare/surging-hospital-prices-are-helping-keep-inflation-high-a146258b" target="_blank">Read Article</a>
+                            </div>
+                            <div className="press-card">
+                                <img className="press-card-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Axios_logo_%282020%29.svg/800px-Axios_logo_%282020%29.svg.png" alt="Axios Logo" />
+                                <h3 className="press-card-title">Transparency Rules Flatten Hospital Prices</h3>
+                                <a className="press-card-link" href="https://www.axios.com/2024/10/24/transparency-rules-flatten-hospital-prices" target="_blank">Read Article</a>
+                            </div>
+                            <div className="press-card">
+                                <img className="press-card-logo" src="https://forgehealth.com/wp-content/uploads/2024/03/fierce-healthcare-logo.jpg" alt="Fierce Healthcare Logo" />
+                                <h3 className="press-card-title">Transparency Leading to Uniformity in Healthcare Costs</h3>
+                                <a className="press-card-link" href="https://www.fiercehealthcare.com/providers/transparency-leading-uniformity-healthcare-costs-not-necessarily-lower-prices-study" target="_blank">Read Article</a>
+                            </div>
+                            <div className="press-card">
+                                <img className="press-card-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Yahoo%21_Finance_logo_2021.png/1200px-Yahoo%21_Finance_logo_2021.png" alt="Yahoo Finance Logo" />
+                                <h3 className="press-card-title">Health Costs Grew in Line with Overall Inflation</h3>
+                                <a className="press-card-link" href="https://finance.yahoo.com/news/health-costs-grew-line-overall-090000713.html" target="_blank">Read Article</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
-        window.scrollTo(0, 0); // Reset scroll position on page load
-
-        
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Dashboard />);
     </script>
 </body>
 </html>
