@@ -99,6 +99,9 @@
         .metric-card.blue::before { background-color: #02363d; }
         .metric-card.green::before { background-color: #198038; }
         .metric-card.orange::before { background-color: #e5a000; }
+        .metric-card.turquoise-og::before {
+    background-color: #36C5BA;
+}
 
         .metric-label {
             color: #02363d;
@@ -620,10 +623,10 @@
                             color="green"
                         />
                         <MetricCard
-                            label="Overall Healthcare Inflation (CPI Hospital Services)"
+                            label="Inflation Benchmark (CPI Hospital Services)"
                             value={`${latestData.yoyCPI ?? '7.9'}%`}
                             sublabel="Year-over-Year"
-                            color="orange"
+                            color="turquoise-og"
                         />
                     </div>
 
@@ -643,7 +646,7 @@
                             </div>
                             <div className="report-card">
                                 <h3 className="report-card-title">2023 Year in Review</h3>
-                                <p className="report-card-description">A comprehensive analysis of yearly healthcare cost trends, highlighting key drivers behind pricing changes across major service categories.</p>
+                                <p className="report-card-description">A comprehensive analysis of yearly healthcare price trends, highlighting key drivers behind pricing changes across major service categories.</p>
                                 <a href="https://blog.turquoise.health/2023-year-in-review-healthcare-economics-edition/" target="_blank">
                                     <button className="report-button">View Report</button>
                                 </a>
@@ -678,7 +681,7 @@
                             </div>
                             <div className="data-story-card">
                                 <h3 className="data-story-card-title">The Healthcare Cost Conundrum</h3>
-                                <p className="data-story-card-description">Prices are stabilizing. Why are expenses still rising? Let's dive into the data behind this healthcare conundrum.</p>
+                                <p className="data-story-card-description">Prices are stabilizing. Why are costs still rising? Let's dive into the data behind this healthcare conundrum.</p>
                                 <a href="https://blog.turquoise.health/the-healthcare-cost-conundrum/" target="_blank">
                                     <button className="data-story-button">Read Story</button>
                                 </a>
